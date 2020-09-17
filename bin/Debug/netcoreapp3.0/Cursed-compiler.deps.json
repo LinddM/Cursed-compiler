@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "Cursed-compiler/1.0.0": {
+        "runtime": {
+          "Cursed-compiler.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Cursed-compiler/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

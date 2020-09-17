@@ -1,0 +1,11 @@
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.exe
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.deps.json
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.runtimeconfig.json
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.runtimeconfig.dev.json
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.dll
+C:\Users\Lindsey\Desktop\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.pdb
+C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.csprojAssemblyReference.cache
+C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfoInputs.cache
+C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfo.cs
+C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.dll
+C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.pdb
