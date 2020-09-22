@@ -8,7 +8,13 @@ namespace Cursed_compiler
     {   
         public Scanner(string text)
         {
-            Console.Write("Inside scan");
+            Console.WriteLine("Inside scan");
+
+            List<List<String>> almostCleanTokens = cleanTokens(text);
+            Console.WriteLine("Scan finished");
+        }
+        static List<List<String>> cleanTokens(string text) 
+        {
             String [] Lines = text.Split("\r\n"); // separar texto por lineas
             
             for(int i=0; i<Lines.Length; i++){
@@ -26,13 +32,19 @@ namespace Cursed_compiler
                 preTokens[i]=line[i].Split();
             }
             // eliminar espacios
-            string [][] pseudoTokens= new string [preTokens.Length][];
+            List<List<String>> pseudoTokens = new List<List<string>>();
             for(int i=0; i<preTokens.Length; i++){
+                List<String> nonSpaces = new List<string>();
                 for(int j=0; j<preTokens[i].Length; j++){
-                    //if(preTokens[i][j]!=" "){
-                    //}
+                    if(preTokens[i][j]!=" "){
+                        nonSpaces.Add(preTokens[i][j]);
+                    }
                 }
+                nonSpaces.RemoveAll(x=>x=="");
+                pseudoTokens.Add(nonSpaces);
             }
+            return pseudoTokens;
         }
+
     }
 }
