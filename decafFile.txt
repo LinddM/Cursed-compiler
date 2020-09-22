@@ -1,4 +1,24 @@
-class Foo {  //  Declare a class named Foo
+class c {
+   c x;
+
+   public int[] y()	{ return new int[10]; }
+
+   public void m () {
+      x.y()[1];
+    }
+
+   public int n() {
+      if (true) { }
+      else {
+	 return 1;
+       }
+	   return 0;
+    }
+
+   public static void main(String[] argv) { }
+
+}
+classFoo {  //  Declare a class named Foo
     int key;
 }
 
