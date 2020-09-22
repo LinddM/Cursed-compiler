@@ -10,11 +10,15 @@ namespace Cursed_compiler
         {
             Console.WriteLine("Inside scan");
 
-            List<List<String>> almostCleanTokens = cleanTokens(text);
+            List<List<String>> myCleanTokens = cleanTokens(text);
             Console.WriteLine("Scan finished");
         }
-        static List<List<String>> cleanTokens(string text) 
-        {
+        static void classify(){
+            // tomar cada token y ponerle su tipo (ver hoja de decaf)
+        }
+        static List<List<String>> cleanTokens(string text){
+            /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/
+
             String [] Lines = text.Split("\r\n"); // separar texto por lineas
             
             for(int i=0; i<Lines.Length; i++){
@@ -49,13 +53,15 @@ namespace Cursed_compiler
         }
 
         static List<String> divideSymbols(string token){
+            /** quitamos punto y coma y tokenizamos separando por operadores*/
+
             List<String> myTokens = new List<string>();
             // separar operadores
             char [] tokens = token.ToCharArray();
             String accum="";
             foreach(char elem in tokens){
                 // hacer esto con un string de operadores y contains
-                if(elem!='>' && elem!='<' && elem!='=' && elem!='+' && elem!='-' && elem!='(' && elem!=')' && elem!='{' && elem!='}' && elem!=(char)34 && elem!=(char)39 && elem!='/' && elem!='*' && elem!='%' && elem!='&' && elem!='|'  && elem!='!'){
+                if(elem!='>' && elem!='<' && elem!='=' && elem!='+' && elem!='-' && elem!='(' && elem!=')' && elem!='{' && elem!='}' && elem!=(char)34 && elem!=(char)39 && elem!='/' && elem!='*' && elem!='%' && elem!='&' && elem!='|'  && elem!='!' && elem!=','){
                     if(elem!=';'){ // quitar ; (punto y coma)
                         accum+=elem;
                     }

@@ -30,3 +30,60 @@ def int main(){
 print_char('c'); // test to print char
 print_int(2*3); // test to print mult
 print_int(3/3); // test to print div
+
+class Example {
+    void main() {
+        int x; int y;
+        x=read();
+        y = read();
+        print(gcd(x, y));
+    }
+    int gcd(int a, int b) {
+        if ( b == 0 )
+            return a;
+        else
+            return gcd(b,a%b);
+    }
+}
+
+class ListNode {
+    int data;
+    ListNode next;
+    void setData(int x) {
+        data = x;
+    }
+}
+class List {
+    ListNode head;
+    void show(ListNode list) {
+        ListNode cursor;
+        int count;
+        count = 0;
+        cursor = list;
+        while ( cursor != null ) {
+            count = count + 1;
+            print(count, cursor.data);
+            cursor = cursor.next;
+        }
+    }
+    void main() {
+        ListNode second;
+        ListNode third;
+        head = new ListNode();
+        head.setData(4);  //  Could use "head.data = 4;"
+        print(head.data);
+        second = new ListNode();
+        second.setData(5);
+        print(second.data);
+        third = new ListNode();
+        third.setData(11);
+        print(third.data);
+        head.next = second;
+        second.next = third;
+        third.next=null;
+        show(head);
+    }
+}
+if(4<=5){
+    print("yes");
+}
