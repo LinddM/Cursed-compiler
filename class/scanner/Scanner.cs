@@ -37,7 +37,9 @@ namespace Cursed_compiler
                 List<String> nonSpaces = new List<string>();
                 for(int j=0; j<preTokens[i].Length; j++){
                     if(preTokens[i][j]!=" "){
-                        nonSpaces.Add(preTokens[i][j]);
+                        foreach(String element in divideSymbols(preTokens[i][j])){
+                            nonSpaces.Add(element);
+                        }
                     }
                 }
                 nonSpaces.RemoveAll(x=>x=="");
@@ -46,5 +48,29 @@ namespace Cursed_compiler
             return pseudoTokens;
         }
 
+        static List<String> divideSymbols(string token){
+            List<String> myTokens = new List<string>();
+            // separar operadores
+            char [] tokens = token.ToCharArray();
+            String accum="";
+            foreach(char elem in tokens){
+                // hacer esto con un string de operadores y contains
+                if(elem!='>' && elem!='<' && elem!='=' && elem!='+' && elem!='-' && elem!='(' && elem!=')' && elem!='{' && elem!='}' && elem!=(char)34 && elem!=(char)39 && elem!='/' && elem!='*' && elem!='%' && elem!='&' && elem!='|'  && elem!='!'){
+                    if(elem!=';'){ // quitar ; (punto y coma)
+                        accum+=elem;
+                    }
+                }else{
+                    if(accum!=""){
+                        myTokens.Add(accum);
+                        myTokens.Add(elem.ToString());
+                    }else{
+                        myTokens.Add(elem.ToString());
+                    }
+                    accum="";
+                }
+            }
+            myTokens.Add(accum);
+            return myTokens;
+        }
     }
 }
