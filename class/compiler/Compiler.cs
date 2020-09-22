@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Cursed_compiler
@@ -7,6 +8,14 @@ namespace Cursed_compiler
     {
         static void Main(string[] args)
         {
+            string text = System.IO.File.ReadAllText("decafFile.txt");
+
+            /* Pasar todo a hashtable
+            Hashtable myHash = new Hashtable();
+            myHash.Add("constant", "constant optimizing");
+            myHash.Add("algebraic", "algebraic optimization");
+            */
+
             int parameters = args.Length;
             switch(parameters){
                 case 0:
@@ -58,6 +67,7 @@ namespace Cursed_compiler
                 switch(myArg){
                     case "scan":
                         Console.WriteLine(message + ": scanning");
+                        Scanner scan = new Scanner(text);
                         break;
                     case "parse":
                         Console.WriteLine(message + ": scanning");
