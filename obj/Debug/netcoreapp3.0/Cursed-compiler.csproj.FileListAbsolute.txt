@@ -9,3 +9,14 @@ C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler
 C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfo.cs
 C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.dll
 C:\Users\Lindsey\Desktop\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.pdb
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.exe
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.deps.json
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.runtimeconfig.json
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.runtimeconfig.dev.json
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.dll
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\Cursed-compiler.pdb
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.csprojAssemblyReference.cache
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfoInputs.cache
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfo.cs
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.dll
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.pdb

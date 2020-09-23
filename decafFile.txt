@@ -1,3 +1,7 @@
+if(4<=5){
+    print("yes");
+}
+
 class Foo {  //  Declare a class named Foo
     int key;
 }

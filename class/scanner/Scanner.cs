@@ -29,7 +29,7 @@ namespace Cursed_compiler
                 }
             }
             List <string> line = new List<string>(Lines);
-            line.RemoveAll(x=>x==""); // quitar lineas sin data
+            //line.RemoveAll(x=>x==""); // quitar lineas sin data
             // tokenizar lineas
             string [][] preTokens= new string [line.Count][];
             for(int i=0; i<line.Count; i++){
