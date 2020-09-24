@@ -120,3 +120,9 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij
 
 /bin/
+
+
+*/**/bin/Debug
+*/**/bin/Release
+*/**/obj/Debug
+*/**/obj/Release
