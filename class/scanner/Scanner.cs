@@ -8,11 +8,11 @@ namespace Cursed_compiler
 {
     class Scanner
     {   
-        public Scanner(string text)
+        public Scanner(string text, string mode)
         {
             Console.WriteLine("Inside scan");
 
-            List<List<String>> myCleanTokens = cleanTokens(text); // limpiar tokens
+            List<List<String>> myCleanTokens = cleanTokens(text, mode); // limpiar tokens
             // tokensAndTypes positions: Id, [line, type, value]
             Dictionary<string, List<string>> tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
             Console.WriteLine("Scan finished");
@@ -303,7 +303,7 @@ namespace Cursed_compiler
             }
             return isNum;
         }
-        static List<List<String>> cleanTokens(string text){
+        static List<List<String>> cleanTokens(string text, string mode){
             /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/
 
             String [] Lines = text.Split("\r\n"); // separar texto por lineas
@@ -329,6 +329,9 @@ namespace Cursed_compiler
                 for(int j=0; j<preTokens[i].Length; j++){
                     if(preTokens[i][j]!=" "){
                         foreach(String element in divideSymbols(preTokens[i][j])){
+                            if(mode=="debugging" && element!=""){
+                                Console.WriteLine("Leyendo "+element);
+                            }
                             nonSpaces.Add(element);
                         }
                     }

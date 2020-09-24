@@ -67,7 +67,7 @@ namespace Cursed_compiler
                 switch(myArg){
                     case "scan":
                         Console.WriteLine(message + ": scanning");
-                        Scanner scan = new Scanner(text);
+                        Scanner scan = new Scanner(text, message);
                         break;
                     case "parse":
                         Console.WriteLine(message + ": scanning");
