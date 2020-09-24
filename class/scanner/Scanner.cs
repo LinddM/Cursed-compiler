@@ -1,6 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CsvHelper;
+using System.IO;
+using System.Linq;
+
+
 
 namespace Cursed_compiler
 {
@@ -15,6 +20,9 @@ namespace Cursed_compiler
             Dictionary<string, List<string>> tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
             Console.WriteLine("Scan finished");
         }
+
+        
+
         static Dictionary<string, List<string>> classify(List<List<String>> tokens){
             // tomar cada token y ponerle su tipo (ver hoja de decaf)
             Dictionary<string, List<string>> myDict = new Dictionary<string, List<string>>();
@@ -51,9 +59,25 @@ namespace Cursed_compiler
                     }
                 }
             }
+
+            var lista = myDict.Values.ToList();
+            using (StreamWriter file = new StreamWriter("D:/UFM/Tercero/5to semestre/Compiladores/Cursed-compiler/class/scanner/testcsv2.1.csv"))
+                foreach (var entry in lista)
+                    file.WriteLine(string.Join(",",entry)); 
+                    
             
             return myDict;
         }
+
+        public class ConsoleFriendlyList<T> : List<T>
+        {
+            public override string ToString()
+            {
+                return $"List: {string.Join(", ", this)}";
+            }
+        }
+ 
+        
         static Boolean isVariable(string token){
             Boolean isVar=false;
 
