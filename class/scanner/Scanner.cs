@@ -28,13 +28,102 @@ namespace Cursed_compiler
                         myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
                     }else{
                         //next step: define regular expression for variables and errors
-                        List <string> lineType = new List<string>(){i.ToString(),"undefined", tokens[i][j]};
-                        myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        Boolean hasType=false;
+                        if(isVariable(tokens[i][j])){
+                            hasType=true;
+                            List <string> lineType = new List<string>(){(i+1).ToString(),"<variable>", tokens[i][j]};
+                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        }
+                        if(isObject(tokens[i][j])){
+                            hasType=true;
+                            List <string> lineType = new List<string>(){(i+1).ToString(),"<object>", tokens[i][j]};
+                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        }
+                        if(isNumber(tokens[i][j])){
+                            hasType=true;
+                            List <string> lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
+                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        }
+                        if(!hasType){
+                            List <string> lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
+                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        }
                     }
                 }
             }
             
             return myDict;
+        }
+        static Boolean isVariable(string token){
+            Boolean isVar=false;
+
+            SortedList<string, List <string>> states=new SortedList<string, List <string>>();
+
+            // define if we have letters, numbers, underscore or nonvalid (any other char)
+            for(int i=0; i<token.Length; i++){
+                string type="other";
+                if(Char.IsLetter(token[i])){
+                    type="letter";
+                }
+                if(Char.IsDigit(token[i])){
+                    type="number";
+                }
+                if(states.ContainsKey("nonvalid")){
+                    break;
+                }
+                // create list of states
+                // id (type_value_position), type, value
+                List <string> typeValue = new List<string>(){type, token[i].ToString()};
+
+                // create state
+                switch(type){
+                    case "letter":
+                    states.Add(i.ToString()+"letter_", typeValue);
+                        break;
+                    case "number":
+                        states.Add(i.ToString()+"number_", typeValue);
+                        break;
+                    case "other":
+                        if(token[i]=='_'){
+                            states.Add(i.ToString()+"unders_", typeValue);
+                        }else{
+                            states.Add("nonvalid", typeValue);
+                        }
+                        break;
+                    default:
+                        states.Add("nonvalid", typeValue);
+                        break;
+                }
+            }
+            // check if we have valid states
+            isVar=checkStatesVar(states);
+
+            return isVar;
+        }
+        static Boolean checkStatesVar(SortedList<string, List <string>> stateList){
+            /* Define if list of states belongs to our NFA or not*/
+            Boolean isVar=true;
+            var vals = stateList.Values;
+            if(vals.Count<1){
+                return false;
+            }
+            foreach(string elem in stateList.Keys){
+                if(elem=="nonvalid"){
+                    return false;
+                }
+            }
+            if(vals[0][0]!="letter"){
+                return false;
+            }
+            return isVar;
+        }
+        static Boolean isObject(string token){
+            Boolean isVar=false;
+            return isVar;
+        }
+        static Boolean isNumber(string token){
+            Boolean isVar=false;
+            return isVar;
         }
         static List<List<String>> cleanTokens(string text){
             /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/

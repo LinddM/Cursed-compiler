@@ -1,3 +1,8 @@
+fldsmdfr_^^2020
+_test
+^test2
+10
+1test
 class c {
    c x;
 
