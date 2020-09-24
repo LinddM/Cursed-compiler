@@ -20,3 +20,5 @@ D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0
 D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.AssemblyInfo.cs
 D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.dll
 D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.pdb
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\bin\Debug\netcoreapp3.0\CsvHelper.dll
+D:\UFM\Tercero\5to semestre\Compiladores\Cursed-compiler\obj\Debug\netcoreapp3.0\Cursed-compiler.csproj.CopyComplete
