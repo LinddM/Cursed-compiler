@@ -8,24 +8,27 @@
     ".NETCoreApp,Version=v3.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Lindsey\\.nuget\\packages\\": {},
+    "C:\\Users\\boris\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Lindsey\\Desktop\\Cursed-compiler\\Cursed-compiler.csproj",
+      "projectUniqueName": "D:\\UFM\\Tercero\\5to semestre\\Compiladores\\Cursed-compiler\\Cursed-compiler.csproj",
       "projectName": "Cursed-compiler",
-      "projectPath": "C:\\Users\\Lindsey\\Desktop\\Cursed-compiler\\Cursed-compiler.csproj",
-      "packagesPath": "C:\\Users\\Lindsey\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Lindsey\\Desktop\\Cursed-compiler\\obj\\",
+      "projectPath": "D:\\UFM\\Tercero\\5to semestre\\Compiladores\\Cursed-compiler\\Cursed-compiler.csproj",
+      "packagesPath": "C:\\Users\\boris\\.nuget\\packages\\",
+      "outputPath": "D:\\UFM\\Tercero\\5to semestre\\Compiladores\\Cursed-compiler\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Lindsey\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\boris\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.0"
