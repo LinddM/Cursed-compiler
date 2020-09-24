@@ -1,27 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using CsvHelper;
 using System.IO;
 using System.Linq;
-
-
 
 namespace Cursed_compiler
 {
     class Scanner
     {   
-        public Scanner(string text)
+        public Scanner(string text, string mode)
         {
             Console.WriteLine("Inside scan");
 
-            List<List<String>> myCleanTokens = cleanTokens(text); // limpiar tokens
+            List<List<String>> myCleanTokens = cleanTokens(text, mode); // limpiar tokens
             // tokensAndTypes positions: Id, [line, type, value]
             Dictionary<string, List<string>> tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
             Console.WriteLine("Scan finished");
-        }
-
-        
+        }        
 
         static Dictionary<string, List<string>> classify(List<List<String>> tokens){
             // tomar cada token y ponerle su tipo (ver hoja de decaf)
@@ -51,7 +46,9 @@ namespace Cursed_compiler
                             lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
                         }
                         if(!hasType){
-                            lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
+                            if(tokens[i][j]!=""){
+                                lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
+                            }
                         }
                     }
                     myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
@@ -60,11 +57,14 @@ namespace Cursed_compiler
 
 
             var lista = myDict.Values.ToList();
-            using (StreamWriter file = new StreamWriter("D:/UFM/Tercero/5to semestre/Compiladores/Cursed-compiler/class/scanner/testcsv2.1.csv"))
-                foreach (var entry in lista)
+            using (StreamWriter file = new StreamWriter("output.csv"))
+                foreach (var entry in lista){
+                    if(entry[1]=="error"){
+                        Console.WriteLine("Error en la linea "+entry[0]+": "+entry[2]);
+                    }
                     file.WriteLine(string.Join(",",entry)); 
-                    
-            
+                }
+                Console.WriteLine("Lista de variables y tipos en output.csv");            
 
             return myDict;
         }
@@ -303,7 +303,7 @@ namespace Cursed_compiler
             }
             return isNum;
         }
-        static List<List<String>> cleanTokens(string text){
+        static List<List<String>> cleanTokens(string text, string mode){
             /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/
 
             String [] Lines = text.Split("\r\n"); // separar texto por lineas
@@ -329,6 +329,9 @@ namespace Cursed_compiler
                 for(int j=0; j<preTokens[i].Length; j++){
                     if(preTokens[i][j]!=" "){
                         foreach(String element in divideSymbols(preTokens[i][j])){
+                            if(mode=="debugging" && element!=""){
+                                Console.WriteLine("Leyendo "+element);
+                            }
                             nonSpaces.Add(element);
                         }
                     }
@@ -387,10 +390,12 @@ namespace Cursed_compiler
             classifyTypes.Add("-=","<asign_op>");
             classifyTypes.Add("==","<eq_op>");
             classifyTypes.Add("!=","<eq_op>");
+            classifyTypes.Add("!","<exclam>"); // hay que quitarlo
             classifyTypes.Add("&&","<cond_op>");
             classifyTypes.Add("||","<cond_op>");
             classifyTypes.Add("\"", "<string_op>"); // (char)34
             classifyTypes.Add("'", "<char_op>"); // (char)39
+            classifyTypes.Add(",","<comma_sep>");
             classifyTypes.Add("boolean","<type>");
             classifyTypes.Add("int","<type>");
             classifyTypes.Add("float","<type>");
