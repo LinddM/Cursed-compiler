@@ -30,35 +30,34 @@ namespace Cursed_compiler
 
             for(int i=0; i<tokens.Count; i++){
                 for(int j=0; j<tokens[i].Count; j++){
+                    List <string> lineType = new List<string>();
                     if(classifyTypes.ContainsKey(tokens[i][j])){
                         // lineType positions: line, type, value
-                        List <string> lineType = new List<string>(){(i+1).ToString(), classifyTypes[tokens[i][j]].ToString(), tokens[i][j]};
-                        myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                        lineType = new List<string>(){(i+1).ToString(), classifyTypes[tokens[i][j]].ToString(), tokens[i][j]};
+                        
                     }else{
                         //next step: define regular expression for variables and errors
                         Boolean hasType=false;
                         if(isVariable(tokens[i][j])){
                             hasType=true;
-                            List <string> lineType = new List<string>(){(i+1).ToString(),"<variable>", tokens[i][j]};
-                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                            lineType = new List<string>(){(i+1).ToString(),"<variable>", tokens[i][j]};
                         }
                         if(isObject(tokens[i][j])){
                             hasType=true;
-                            List <string> lineType = new List<string>(){(i+1).ToString(),"<object>", tokens[i][j]};
-                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                            lineType = new List<string>(){(i+1).ToString(),"<object>", tokens[i][j]};
                         }
                         if(isNumber(tokens[i][j])){
                             hasType=true;
-                            List <string> lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
-                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                            lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
                         }
                         if(!hasType){
-                            List <string> lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
-                            myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
+                            lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
                         }
                     }
+                    myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
                 }
             }
+
 
             var lista = myDict.Values.ToList();
             using (StreamWriter file = new StreamWriter("D:/UFM/Tercero/5to semestre/Compiladores/Cursed-compiler/class/scanner/testcsv2.1.csv"))
@@ -66,6 +65,7 @@ namespace Cursed_compiler
                     file.WriteLine(string.Join(",",entry)); 
                     
             
+
             return myDict;
         }
 
@@ -128,26 +128,180 @@ namespace Cursed_compiler
             /* Define if list of states belongs to our NFA or not*/
             Boolean isVar=true;
             var vals = stateList.Values;
+            // there's something to check in the token
             if(vals.Count<1){
                 return false;
             }
+            // all types are valid in the states
             foreach(string elem in stateList.Keys){
                 if(elem=="nonvalid"){
                     return false;
                 }
             }
+            // the fist state allows a letter
             if(vals[0][0]!="letter"){
                 return false;
             }
             return isVar;
         }
         static Boolean isObject(string token){
-            Boolean isVar=false;
-            return isVar;
+            SortedList<string, List <string>> states=new SortedList<string, List <string>>();
+
+            // define if we have letters, numbers, underscore or nonvalid (any other char)
+            for(int i=0; i<token.Length; i++){
+                string type="other";
+                if(Char.IsLetter(token[i])){
+                    type="letter";
+                }
+                if(Char.IsDigit(token[i])){
+                    type="number";
+                }
+                if(states.ContainsKey("nonvalid")){
+                    break;
+                }
+                // create list of states
+                // id (type_value_position), type, value
+                List <string> typeValue = new List<string>(){type, token[i].ToString()};
+
+                // create state
+                switch(type){
+                    case "letter":
+                    states.Add(i.ToString()+"letter_", typeValue);
+                        break;
+                    case "number":
+                        states.Add(i.ToString()+"number_", typeValue);
+                        break;
+                    case "other":
+                        if(token[i]=='_'){
+                            states.Add(i.ToString()+"unders_", typeValue);
+                        }if(token[i]=='.'){
+                            states.Add(i.ToString()+"period_", typeValue);
+                        }else{
+                            states.Add("nonvalid", typeValue);
+                        }
+                        break;
+                    default:
+                        states.Add("nonvalid", typeValue);
+                        break;
+                }
+            }
+            // check if we have valid states
+            return checkStatesObj(states);
+        }
+        static Boolean checkStatesObj(SortedList<string, List <string>> stateList){
+            /* Define if list of states belongs to our NFA or not*/
+            Boolean isObj=true;
+            var vals = stateList.Values;
+            // there's something to check in the token
+            if(vals.Count<1){
+                return false;
+            }
+            // the first char must be a letter
+            if(vals[0][0]!="letter"){
+                return false;
+            }
+            // it must include just one period
+            int countPeriod=0;
+            for(int i=0; i<vals.Count; i++){
+                if(vals[i][1]=="."){
+                    countPeriod++;
+                }
+            }
+            if(countPeriod>1){
+                return false;
+            }
+            if(countPeriod==0){
+                return false;
+            }
+            // all types are valid in the states
+            foreach(string elem in stateList.Keys){
+                if(elem=="nonvalid"){
+                    return false;
+                }
+            }
+            // allow only a letter after the period
+            for(int i=0; i<vals.Count; i++){
+                if(vals[i][0]=="other" && i<vals.Count-1){
+                    if(vals[i+1][0]!="letter"){
+                        return false;
+                    }
+                }
+            }
+            return isObj;
         }
         static Boolean isNumber(string token){
-            Boolean isVar=false;
-            return isVar;
+            /* Checks if a token is a valid number*/
+            Boolean isNum=false;
+
+            SortedList<string, List <string>> states=new SortedList<string, List <string>>();
+
+            // define if we have letters, numbers, underscore or nonvalid (any other char)
+            for(int i=0; i<token.Length; i++){
+                string type="other";
+                if(Char.IsDigit(token[i])){
+                    type="number";
+                }
+                if(states.ContainsKey("nonvalid")){
+                    break;
+                }
+                // create list of states
+                // id (type_value_position), type, value
+                List <string> typeValue = new List<string>(){type, token[i].ToString()};
+
+                // create state
+                switch(type){
+                    case "number":
+                        states.Add(i.ToString()+"number_", typeValue);
+                        break;
+                    case "other":
+                        if(token[i]=='.'){
+                            states.Add(i.ToString()+"period_", typeValue);
+                        }else{
+                            states.Add("nonvalid", typeValue);
+                        }
+                        break;
+                    default:
+                        states.Add("nonvalid", typeValue);
+                        break;
+                }
+            }
+            // check if we have valid states
+            isNum=checkStatesNum(states);
+            return isNum;
+        }
+        static Boolean checkStatesNum(SortedList<string, List <string>> stateList){
+            /* Define if list of states belongs to our NFA or not*/
+            Boolean isNum=true;
+            var vals = stateList.Values;
+            // there's something to check in the token
+            if(vals.Count<1){
+                return false;
+            }
+            // all types are valid in the states
+            foreach(string elem in stateList.Keys){
+                if(elem=="nonvalid"){
+                    return false;
+                }
+            }
+            // the first char must be a number
+            if(vals[0][0]!="number"){
+                return false;
+            }
+            // the last char must be a number
+            if(vals[stateList.Count-1][0]!="number"){
+                return false;
+            }
+            // it must include just one period
+            int countPeriod=0;
+            for(int i=0; i<vals.Count; i++){
+                if(vals[i][1]=="."){ // vals[i][0]=="other" && vals[i][1]=="."
+                    countPeriod++;
+                }
+            }
+            if(countPeriod>1){
+                return false;
+            }
+            return isNum;
         }
         static List<List<String>> cleanTokens(string text){
             /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/
@@ -222,6 +376,8 @@ namespace Cursed_compiler
             classifyTypes.Add("]","<close_brackets>");
             classifyTypes.Add("+","<arith_op>");
             classifyTypes.Add("-","<arith_op>");
+            classifyTypes.Add("<","<lessthan_op>");
+            classifyTypes.Add(">","<morethan_op>");
             classifyTypes.Add("/","<arith_op>");
             classifyTypes.Add("*","<arith_op>");
             classifyTypes.Add("%","<arith_op>");
@@ -233,8 +389,8 @@ namespace Cursed_compiler
             classifyTypes.Add("!=","<eq_op>");
             classifyTypes.Add("&&","<cond_op>");
             classifyTypes.Add("||","<cond_op>");
-            classifyTypes.Add((char)34, "<string_op>"); 
-            classifyTypes.Add((char)39, "<char_op>");
+            classifyTypes.Add("\"", "<string_op>"); // (char)34
+            classifyTypes.Add("'", "<char_op>"); // (char)39
             classifyTypes.Add("boolean","<type>");
             classifyTypes.Add("int","<type>");
             classifyTypes.Add("float","<type>");
