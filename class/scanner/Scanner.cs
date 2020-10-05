@@ -349,29 +349,55 @@ namespace Cursed_compiler
             // separar operadores
             char [] tokens = token.ToCharArray();
             String accum="";
-            foreach(char elem in tokens){
+            String accum1 = "";
+            for(int i=0;i<tokens.Length; i++){
+
+                
                 // hacer esto con un string de operadores y contains
                 // poner corchetes
-                if(elem!='>' && elem!='<' && elem!='=' && elem!='+' && elem!='-' && elem!='(' && elem!=')' && elem!='{' && elem!='}' && elem!=(char)34 && elem!=(char)39 && elem!='/' && elem!='*' && elem!='%' && elem!='&' && elem!='|'  && elem!='!' && elem!=','  && elem!='[' && elem!=']'){
-                    if(elem!=';'){ // quitar ; (punto y coma)
-                        accum+=elem;
+                if((tokens[i]!='>' && tokens[i]!='<' && tokens[i]!='=' && tokens[i]!='+' && tokens[i]!='-' && tokens[i]!='(' && tokens[i]!=')' && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' && tokens[i]!='&' && tokens[i]!='|'  && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']')){
+                    if(tokens[i]!=';'){ // quitar ; (punto y coma)
+                        accum+=tokens[i];
+                    }else{
+                        
                     }
                 }else{
+                    
+
                     if(accum!=""){
                         myTokens.Add(accum);
-                        myTokens.Add(elem.ToString());
+                        myTokens.Add(tokens[i].ToString());
+
                     }else{
-                        myTokens.Add(elem.ToString());
+                        
+
+                        myTokens.Add(tokens[i].ToString());
                     }
                     accum="";
                 }
+                try{
+                    if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=') && tokens[i+1] == '='){
+                        accum1 = tokens[i].ToString()+tokens[i+1].ToString();
+                        myTokens.Add(accum1);
+                        i++;
+                        
+                    }
+
+                }catch(IndexOutOfRangeException){
+
+                }
+                
             }
             myTokens.Add(accum);
+            myTokens.Add(accum1);
+
             return myTokens;
         }
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
             classifyTypes.Add("{","<open_braces>");
+            classifyTypes.Add("<=","<eqmorethan_op>");
+
             classifyTypes.Add("}","<close_braces>");
             classifyTypes.Add("(","<open_parents>");
             classifyTypes.Add(")","<close_parents>");
