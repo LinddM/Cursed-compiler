@@ -57,6 +57,7 @@ namespace Cursed_compiler
 
 
             var lista = myDict.Values.ToList();
+            int h = lista.Count;
             using (StreamWriter file = new StreamWriter("output.csv"))
                 foreach (var entry in lista){
                     if(entry[1]=="error"){
@@ -341,62 +342,104 @@ namespace Cursed_compiler
             }
             return pseudoTokens;
         }
+        static void removeDuplicates(String str) 
+{ 
+    List<char> v = new List<char>(); 
+    for (int i = 0; i < str.Length; ++i)  
+    { 
+        v.Add(str[i]); 
+  
+        if (v.Count > 2)  
+        { 
+            int sz = v.Count; 
+  
+            // removing three consecutive duplicates 
+            if (v[sz - 1] == v[sz - 2] &&  
+                v[sz - 2] == v[sz - 3])  
+            { 
+                v.RemoveRange(sz-3,3); // Removing three characters 
+                                // from the string 
+            } 
+        } 
+    } 
+  
+} 
+                       static List<String> divideSymbols(string token){
 
-        static List<String> divideSymbols(string token){
-            /** quitamos punto y coma y tokenizamos separando por operadores*/
+           
 
             List<String> myTokens = new List<string>();
-            // separar operadores
             char [] tokens = token.ToCharArray();
             String accum="";
             String accum1 = "";
-            for(int i=0;i<tokens.Length; i++){
+            
 
-                
-                // hacer esto con un string de operadores y contains
-                // poner corchetes
-                if((tokens[i]!='>' && tokens[i]!='<' && tokens[i]!='=' && tokens[i]!='+' && tokens[i]!='-' && tokens[i]!='(' && tokens[i]!=')' && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' && tokens[i]!='&' && tokens[i]!='|'  && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']')){
-                    if(tokens[i]!=';'){ // quitar ; (punto y coma)
-                        accum+=tokens[i];
-                    }else{
+            for(int i=0;i<tokens.Length; i++){
+                try{
+                    if((tokens[i]!='>' && tokens[i]!='<' && tokens[i]!='=' && tokens[i]!='+' && tokens[i]!='-' && tokens[i]!='(' && tokens[i]!=')' 
+                    && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' && 
+                    tokens[i]!='&' && tokens[i]!='|'  && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']' ) ){
+
+                    if((tokens[i] == '>' || tokens[i]== '<' || tokens[i]== '!' && tokens[i+1] == '=')){
                         
+                        Console.WriteLine("pass");
+                        
+                    }else if (tokens[i]!=';' ){
+                        accum+=tokens[i];
+                        
+
                     }
+
                 }else{
                     
 
-                    if(accum!=""){
+                    if(accum!="" ){
                         myTokens.Add(accum);
                         myTokens.Add(tokens[i].ToString());
 
                     }else{
+                        
+                        
                         
 
                         myTokens.Add(tokens[i].ToString());
                     }
                     accum="";
                 }
-                try{
-                    if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=') && tokens[i+1] == '='){
+                if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=') && tokens[i+1] == '='){
+                        removeDuplicates(accum);
                         accum1 = tokens[i].ToString()+tokens[i+1].ToString();
                         myTokens.Add(accum1);
                         i++;
-                        
+                       
                     }
-
+     
                 }catch(IndexOutOfRangeException){
 
                 }
+
+            }
+
+            
+            for(var i =0; i <myTokens.Count-1;i++){
+                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=")  ){
+                    myTokens.Remove(myTokens[i]);
+                }
                 
             }
+            
             myTokens.Add(accum);
-            myTokens.Add(accum1);
-
+            
             return myTokens;
         }
+        
+
+
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
             classifyTypes.Add("{","<open_braces>");
-            classifyTypes.Add("<=","<eqmorethan_op>");
+            classifyTypes.Add(">=","<eqmorethan_op>");
+            classifyTypes.Add("<=","<eqlessthan_op>");
 
             classifyTypes.Add("}","<close_braces>");
             classifyTypes.Add("(","<open_parents>");
@@ -415,7 +458,7 @@ namespace Cursed_compiler
             classifyTypes.Add("+=","<asign_op>");
             classifyTypes.Add("-=","<asign_op>");
             classifyTypes.Add("==","<eq_op>");
-            classifyTypes.Add("!=","<eq_op>");
+            classifyTypes.Add("!=","<not_eq_op>");
             classifyTypes.Add("!","<exclam>"); // hay que quitarlo
             classifyTypes.Add("&&","<cond_op>");
             classifyTypes.Add("||","<cond_op>");
