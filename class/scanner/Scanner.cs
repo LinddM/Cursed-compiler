@@ -372,13 +372,14 @@ namespace Cursed_compiler
             char [] tokens = token.ToCharArray();
             String accum="";
             String accum1 = "";
+            String accum2 = "";
             
 
             for(int i=0;i<tokens.Length; i++){
                 try{
                     if((tokens[i]!='>' && tokens[i]!='<' && tokens[i]!='=' && tokens[i]!='+' && tokens[i]!='-' && tokens[i]!='(' && tokens[i]!=')' 
-                    && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' && 
-                    tokens[i]!='&' && tokens[i]!='|'  && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']' ) ){
+                    && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' /*&& 
+                    tokens[i]!='&' && tokens[i]!='|' */ && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']' ) ){
 
                     if((tokens[i] == '>' || tokens[i]== '<' || tokens[i]== '!' && tokens[i+1] == '=')){
                         
@@ -406,7 +407,7 @@ namespace Cursed_compiler
                     }
                     accum="";
                 }
-                if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=') && tokens[i+1] == '='){
+                if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=' || tokens[i] == '+' || tokens[i] == '-') && tokens[i+1] == '='){
                         removeDuplicates(accum);
                         accum1 = tokens[i].ToString()+tokens[i+1].ToString();
                         myTokens.Add(accum1);
@@ -422,11 +423,34 @@ namespace Cursed_compiler
 
             
             for(var i =0; i <myTokens.Count-1;i++){
-                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=")  ){
+                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=") || (myTokens[i] == "-" && myTokens[i+1] == "-=") || (myTokens[i] == "+" && myTokens[i+1] == "+=") ){
                     myTokens.Remove(myTokens[i]);
+
+
+                    
+                }else if ((myTokens[i] == "&" && myTokens[i+1] == "&") || (myTokens[i] == "|" && myTokens[i+1] == "|")  ){
+                        accum2 = tokens[i].ToString()+tokens[i+1].ToString();
+                        myTokens.Add(accum2);
+                        i++;
+
                 }
+
+                
                 
             }
+            for(var i =0; i <myTokens.Count-1;i++){
+                if((myTokens[i] == "&" && myTokens[i+1] == "&" /*&& myTokens[i+2] == "&&")  || (myTokens[i] == "|" && myTokens[i+1] == "|") || (myTokens[i] == "-" && myTokens[i+1] == "=") || (myTokens[i] == "+" && myTokens[i+1] == "="*/)){
+                    myTokens.Remove(myTokens[i]);
+                    myTokens.Remove(myTokens[i+1]);
+                    
+
+                }
+
+            }
+
+            
+
+
             
             myTokens.Add(accum);
             
@@ -438,8 +462,8 @@ namespace Cursed_compiler
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
             classifyTypes.Add("{","<open_braces>");
-            classifyTypes.Add(">=","<eqmorethan_op>");
-            classifyTypes.Add("<=","<eqlessthan_op>");
+            classifyTypes.Add(">=","<rel_op>");
+            classifyTypes.Add("<=","<rel_op>");
 
             classifyTypes.Add("}","<close_braces>");
             classifyTypes.Add("(","<open_parents>");
@@ -448,12 +472,12 @@ namespace Cursed_compiler
             classifyTypes.Add("]","<close_brackets>");
             classifyTypes.Add("+","<arith_op>");
             classifyTypes.Add("-","<arith_op>");
-            classifyTypes.Add("<","<lessthan_op>");
-            classifyTypes.Add(">","<morethan_op>");
+            classifyTypes.Add("<","<rel_op>");
+            classifyTypes.Add(">","<rel_op>");
             classifyTypes.Add("/","<arith_op>");
             classifyTypes.Add("*","<arith_op>");
             classifyTypes.Add("%","<arith_op>");
-            classifyTypes.Add("callout","<method_call>");
+            classifyTypes.Add("callout","<callout>");
             classifyTypes.Add("=","<asign_op>");
             classifyTypes.Add("+=","<asign_op>");
             classifyTypes.Add("-=","<asign_op>");
