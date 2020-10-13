@@ -1,6 +1,15 @@
+if(4>=5 && ||  -= += ){
+    print("yes");
+}
+
 if(4<=5){
     print("yes");
 }
+
+if(4!=5){
+    print("yes");
+}
+
 
 class Foo {  //  Declare a class named Foo
     int key;
@@ -18,6 +27,7 @@ print(b.key);   //  10 gets printed
 
 a = new Foo();  //  a and b will now reference different
 b = new Foo();  //  objects
+
 
 void print_str(string value)
 void print_int(int value)
@@ -57,6 +67,13 @@ class ListNode {
         data = x;
     }
 }
+class _estoEsError {
+    int data=0;
+    int 45varError;
+    int myVar = 87.e
+    float no_error;
+    float err^or;
+}
 class List {
     ListNode head;
     void show(ListNode list) {
@@ -87,7 +104,4 @@ class List {
         third.next=null;
         show(head);
     }
-}
-if(4<=5){
-    print("yes");
 }

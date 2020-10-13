@@ -1,20 +1,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Cursed_compiler
 {
     class Scanner
     {   
-        public Scanner(string text)
+        public Scanner(string text, string mode)
         {
             Console.WriteLine("Inside scan");
 
-            List<List<String>> myCleanTokens = cleanTokens(text); // limpiar tokens
+            List<List<String>> myCleanTokens = cleanTokens(text, mode); // limpiar tokens
             // tokensAndTypes positions: Id, [line, type, value]
             Dictionary<string, List<string>> tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
             Console.WriteLine("Scan finished");
-        }
+        }        
+
         static Dictionary<string, List<string>> classify(List<List<String>> tokens){
             // tomar cada token y ponerle su tipo (ver hoja de decaf)
             Dictionary<string, List<string>> myDict = new Dictionary<string, List<string>>();
@@ -43,14 +46,39 @@ namespace Cursed_compiler
                             lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
                         }
                         if(!hasType){
-                            lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
+                            if(tokens[i][j]!=""){
+                                lineType = new List<string>(){(i+1).ToString(),"error", tokens[i][j]};
+                            }
                         }
                     }
                     myDict.Add(tokens[i][j]+"_"+(i+1).ToString()+"."+(j+1).ToString(), lineType);
                 }
             }
+
+
+            var lista = myDict.Values.ToList();
+            int h = lista.Count;
+            using (StreamWriter file = new StreamWriter("output.csv"))
+                foreach (var entry in lista){
+                    if(entry[1]=="error"){
+                        Console.WriteLine("Error en la linea "+entry[0]+": "+entry[2]);
+                    }
+                    file.WriteLine(string.Join(",",entry)); 
+                }
+                Console.WriteLine("Lista de variables y tipos en output.csv");            
+
             return myDict;
         }
+
+        public class ConsoleFriendlyList<T> : List<T>
+        {
+            public override string ToString()
+            {
+                return $"List: {string.Join(", ", this)}";
+            }
+        }
+ 
+        
         static Boolean isVariable(string token){
             Boolean isVar=false;
 
@@ -276,7 +304,7 @@ namespace Cursed_compiler
             }
             return isNum;
         }
-        static List<List<String>> cleanTokens(string text){
+        static List<List<String>> cleanTokens(string text, string mode){
             /** separamos por lineas, quitamos comentarios y tokenizamos por espacios*/
 
             String [] Lines = text.Split("\r\n"); // separar texto por lineas
@@ -302,6 +330,9 @@ namespace Cursed_compiler
                 for(int j=0; j<preTokens[i].Length; j++){
                     if(preTokens[i][j]!=" "){
                         foreach(String element in divideSymbols(preTokens[i][j])){
+                            if(mode=="debugging" && element!=""){
+                                Console.WriteLine("Leyendo "+element);
+                            }
                             nonSpaces.Add(element);
                         }
                     }
@@ -311,37 +342,129 @@ namespace Cursed_compiler
             }
             return pseudoTokens;
         }
+        static void removeDuplicates(String str) 
+{ 
+    List<char> v = new List<char>(); 
+    for (int i = 0; i < str.Length; ++i)  
+    { 
+        v.Add(str[i]); 
+  
+        if (v.Count > 2)  
+        { 
+            int sz = v.Count; 
+  
+            // removing three consecutive duplicates 
+            if (v[sz - 1] == v[sz - 2] &&  
+                v[sz - 2] == v[sz - 3])  
+            { 
+                v.RemoveRange(sz-3,3); // Removing three characters 
+                                // from the string 
+            } 
+        } 
+    } 
+  
+} 
+                       static List<String> divideSymbols(string token){
 
-        static List<String> divideSymbols(string token){
-            /** quitamos punto y coma y tokenizamos separando por operadores*/
+           
 
             List<String> myTokens = new List<string>();
-            // separar operadores
             char [] tokens = token.ToCharArray();
             String accum="";
-            foreach(char elem in tokens){
-                // hacer esto con un string de operadores y contains
-                // poner corchetes
-                if(elem!='>' && elem!='<' && elem!='=' && elem!='+' && elem!='-' && elem!='(' && elem!=')' && elem!='{' && elem!='}' && elem!=(char)34 && elem!=(char)39 && elem!='/' && elem!='*' && elem!='%' && elem!='&' && elem!='|'  && elem!='!' && elem!=','  && elem!='[' && elem!=']'){
-                    if(elem!=';'){ // quitar ; (punto y coma)
-                        accum+=elem;
+            String accum1 = "";
+            String accum2 = "";
+            
+
+            for(int i=0;i<tokens.Length; i++){
+                try{
+                    if((tokens[i]!='>' && tokens[i]!='<' && tokens[i]!='=' && tokens[i]!='+' && tokens[i]!='-' && tokens[i]!='(' && tokens[i]!=')' 
+                    && tokens[i]!='{' && tokens[i]!='}' && tokens[i]!=(char)34 && tokens[i]!=(char)39 && tokens[i]!='/' && tokens[i]!='*' && tokens[i]!='%' /*&& 
+                    tokens[i]!='&' && tokens[i]!='|' */ && tokens[i]!='!' && tokens[i]!=','  && tokens[i]!='[' && tokens[i]!=']' ) ){
+
+                    if((tokens[i] == '>' || tokens[i]== '<' || tokens[i]== '!' && tokens[i+1] == '=')){
+                        
+                        Console.WriteLine("pass");
+                        
+                    }else if (tokens[i]!=';' ){
+                        accum+=tokens[i];
+                        
+
                     }
+
                 }else{
-                    if(accum!=""){
+                    
+
+                    if(accum!="" ){
                         myTokens.Add(accum);
-                        myTokens.Add(elem.ToString());
+                        myTokens.Add(tokens[i].ToString());
+
                     }else{
-                        myTokens.Add(elem.ToString());
+                        
+                        
+                        
+
+                        myTokens.Add(tokens[i].ToString());
                     }
                     accum="";
                 }
+                if((tokens[i]== '>' ||tokens[i]== '<' || tokens[i]== '!' || tokens[i]== '=' || tokens[i] == '+' || tokens[i] == '-') && tokens[i+1] == '='){
+                        removeDuplicates(accum);
+                        accum1 = tokens[i].ToString()+tokens[i+1].ToString();
+                        myTokens.Add(accum1);
+                        i++;
+                       
+                    }
+     
+                }catch(IndexOutOfRangeException){
+
+                }
+
             }
+
+            
+            for(var i =0; i <myTokens.Count-1;i++){
+                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=") || (myTokens[i] == "-" && myTokens[i+1] == "-=") || (myTokens[i] == "+" && myTokens[i+1] == "+=") ){
+                    myTokens.Remove(myTokens[i]);
+
+
+                    
+                }else if ((myTokens[i] == "&" && myTokens[i+1] == "&") || (myTokens[i] == "|" && myTokens[i+1] == "|")  ){
+                        accum2 = tokens[i].ToString()+tokens[i+1].ToString();
+                        myTokens.Add(accum2);
+                        i++;
+
+                }
+
+                
+                
+            }
+            for(var i =0; i <myTokens.Count-1;i++){
+                if((myTokens[i] == "&" && myTokens[i+1] == "&" /*&& myTokens[i+2] == "&&")  || (myTokens[i] == "|" && myTokens[i+1] == "|") || (myTokens[i] == "-" && myTokens[i+1] == "=") || (myTokens[i] == "+" && myTokens[i+1] == "="*/)){
+                    myTokens.Remove(myTokens[i]);
+                    myTokens.Remove(myTokens[i+1]);
+                    
+
+                }
+
+            }
+
+            
+
+
+            
             myTokens.Add(accum);
+            
             return myTokens;
         }
+        
+
+
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
             classifyTypes.Add("{","<open_braces>");
+            classifyTypes.Add(">=","<rel_op>");
+            classifyTypes.Add("<=","<rel_op>");
+
             classifyTypes.Add("}","<close_braces>");
             classifyTypes.Add("(","<open_parents>");
             classifyTypes.Add(")","<close_parents>");
@@ -349,21 +472,23 @@ namespace Cursed_compiler
             classifyTypes.Add("]","<close_brackets>");
             classifyTypes.Add("+","<arith_op>");
             classifyTypes.Add("-","<arith_op>");
-            classifyTypes.Add("<","<lessthan_op>");
-            classifyTypes.Add(">","<morethan_op>");
+            classifyTypes.Add("<","<rel_op>");
+            classifyTypes.Add(">","<rel_op>");
             classifyTypes.Add("/","<arith_op>");
             classifyTypes.Add("*","<arith_op>");
             classifyTypes.Add("%","<arith_op>");
-            classifyTypes.Add("callout","<method_call>");
+            classifyTypes.Add("callout","<callout>");
             classifyTypes.Add("=","<asign_op>");
             classifyTypes.Add("+=","<asign_op>");
             classifyTypes.Add("-=","<asign_op>");
             classifyTypes.Add("==","<eq_op>");
-            classifyTypes.Add("!=","<eq_op>");
+            classifyTypes.Add("!=","<not_eq_op>");
+            classifyTypes.Add("!","<exclam>"); // hay que quitarlo
             classifyTypes.Add("&&","<cond_op>");
             classifyTypes.Add("||","<cond_op>");
             classifyTypes.Add("\"", "<string_op>"); // (char)34
             classifyTypes.Add("'", "<char_op>"); // (char)39
+            classifyTypes.Add(",","<comma_sep>");
             classifyTypes.Add("boolean","<type>");
             classifyTypes.Add("int","<type>");
             classifyTypes.Add("float","<type>");
