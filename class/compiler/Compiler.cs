@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cursed_compiler
 {
@@ -9,12 +10,6 @@ namespace Cursed_compiler
         static void Main(string[] args)
         {
             string text = System.IO.File.ReadAllText("decafFile.txt");
-
-            /* Pasar todo a hashtable
-            Hashtable myHash = new Hashtable();
-            myHash.Add("constant", "constant optimizing");
-            myHash.Add("algebraic", "algebraic optimization");
-            */
 
             int parameters = args.Length;
             switch(parameters){
@@ -72,6 +67,43 @@ namespace Cursed_compiler
                     case "parse":
                         Console.WriteLine(message + ": scanning");
                         Console.WriteLine(message + ": parsing");
+                        var gramatica = "<program> : <class> <variable> <open_braces> <field_decl> <method_decl> <close_braces>\n"
+                                        +"<field_decl> : (<type> <variable>) | (<variable> <open_brackets> <number> <close_brackets>)\n"
+                                        +"<method_decl> : (<type> | <void>) <variable> <open_parents> <type> <variable> <block>\n"
+                                        +"<block> : <open_braces> <var_decl>* <statement>* <close_braces>\n"
+                                        +"<var_decl> : <type> <variable>\n"
+                                        +"<statement> : (<location> <assign_op> <expr>) | <method_call> | (<if_stmt> <open_parents> <expr> <close_parents> <block> [<else_stmt> <block>]) | <return> <expr> | <break> | <continue> | <block>\n"
+                                        +"<method_call> : (<variable> <open_parents> <expr>+ <close_parents>) | (<callout> <open_parents> <string_literal> <open_brackets> <callout_arg> <close_brackets> <close_parents>)\n"
+                                        +"<location> : <variable> | (<variable> <open_brackets> <expr> <close_brackets>)\n"
+                                        +"<expr> : <location> | <method_call> | <literal> | <expr> <bin_op> <expr> | !<expr> | (<open_parents> <expr> <close_parents>)\n"
+                                        +"<callout_arg> : <expr> | <string_literal>\n"
+                                        +"<char_literal> : <char_op> <variable> <char_op>\n"
+                                        +"<string_literal> : <string_op> <variable> <string_op>\n"
+                                        +"<bin_op> : <arith_op> | <rel_op> | <eq_op> | <cond_op>\n"
+                                        +"<literal> : <number> | <variable> | <bool_literal>";
+                        // separa producciones
+                        var gramarG = Tools.GetProductions(gramatica);
+                        // cambia estados
+                        var setC = Parser.Items(gramarG).ToList();    
+                        // forma la tabla
+                        var tableAction = Parser.LRTable(setC, gramarG);
+                        
+                        var terminals = Tools.GetTerminals(gramarG);
+                        var noTerminals = Tools.GetNoTerminals (gramarG);
+                        var tokens = terminals.Union (noTerminals).ToArray();
+
+                        System.Console.Write ("\t");
+                        foreach(var token in tokens){
+                            System.Console.Write (token + "\t");
+                        }
+                        System.Console.Write("\n");
+                        for(int i = 0; i < tableAction.GetLength(0); i++){
+                            System.Console.Write (i + "\t");
+                            for(int j = 0; j < tableAction.GetLength(1); j++){
+                                System.Console.Write (tableAction[i,j] + "\t");
+                            }
+                            System.Console.Write ("\n");
+                        }
                         break;
                     case" ast":
                         Console.WriteLine(message + ": scanning");
