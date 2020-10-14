@@ -465,53 +465,53 @@ namespace Cursed_compiler
             classifyTypes.Add(">=","<rel_op>");
             classifyTypes.Add("<=","<rel_op>");
 
-            classifyTypes.Add("}","<close_braces>");
-            classifyTypes.Add("(","<open_parents>");
-            classifyTypes.Add(")","<close_parents>");
-            classifyTypes.Add("[","<open_brackets>");
-            classifyTypes.Add("]","<close_brackets>");
-            classifyTypes.Add("+","<arith_op>");
-            classifyTypes.Add("-","<arith_op>");
-            classifyTypes.Add("<","<rel_op>");
-            classifyTypes.Add(">","<rel_op>");
-            classifyTypes.Add("/","<arith_op>");
-            classifyTypes.Add("*","<arith_op>");
-            classifyTypes.Add("%","<arith_op>");
-            classifyTypes.Add("callout","<callout>");
-            classifyTypes.Add("=","<asign_op>");
-            classifyTypes.Add("+=","<asign_op>");
-            classifyTypes.Add("-=","<asign_op>");
-            classifyTypes.Add("==","<eq_op>");
-            classifyTypes.Add("!=","<not_eq_op>");
-            classifyTypes.Add("!","<exclam>"); // hay que quitarlo
-            classifyTypes.Add("&&","<cond_op>");
-            classifyTypes.Add("||","<cond_op>");
-            classifyTypes.Add("\"", "<string_op>"); // (char)34
-            classifyTypes.Add("'", "<char_op>"); // (char)39
-            classifyTypes.Add(",","<comma_sep>");
-            classifyTypes.Add("boolean","<type>");
-            classifyTypes.Add("int","<type>");
-            classifyTypes.Add("float","<type>");
-            classifyTypes.Add("break","<break_op>");
-            classifyTypes.Add("false","<bool_literal>");
-            classifyTypes.Add("true","<bool_literal>");
-            classifyTypes.Add("if","<if_stmt>");
-            classifyTypes.Add("else","<else_stmt>");
-            classifyTypes.Add("while","<while_stmt>");
-            classifyTypes.Add("for","<for_stmt>");
-            classifyTypes.Add("new","<new>");
-            classifyTypes.Add("null","<null>");
-            classifyTypes.Add("private","<private>");
-            classifyTypes.Add("public","<public>");
-            classifyTypes.Add("return","<return>");
-            classifyTypes.Add("static","<static>");
-            classifyTypes.Add("super","<super>");
-            classifyTypes.Add("this","<this>");
-            classifyTypes.Add("void","<void>");
-            classifyTypes.Add("continue","<continue>");
-            classifyTypes.Add("class","<class>");
-            classifyTypes.Add("extends","<extends>");
-            classifyTypes.Add("print","<print>");
+            classifyTypes.Add("}","close_braces");
+            classifyTypes.Add("(","open_parents");
+            classifyTypes.Add(")","close_parents");
+            classifyTypes.Add("[","open_brackets");
+            classifyTypes.Add("]","close_brackets");
+            classifyTypes.Add("+","arith_op");
+            classifyTypes.Add("-","arith_op");
+            classifyTypes.Add("<","rel_op");
+            classifyTypes.Add(">","rel_op");
+            classifyTypes.Add("/","arith_op");
+            classifyTypes.Add("*","arith_op");
+            classifyTypes.Add("%","arith_op");
+            classifyTypes.Add("callout","callout");
+            classifyTypes.Add("=","asign_op");
+            classifyTypes.Add("+=","asign_op");
+            classifyTypes.Add("-=","asign_op");
+            classifyTypes.Add("==","eq_op");
+            classifyTypes.Add("!=","not_eq_op");
+            classifyTypes.Add("!","exclam"); // hay que quitarlo
+            classifyTypes.Add("&&","cond_op");
+            classifyTypes.Add("||","cond_op");
+            classifyTypes.Add("\"", "string_op"); // (char)34
+            classifyTypes.Add("'", "char_op"); // (char)39
+            classifyTypes.Add(",","comma_sep");
+            classifyTypes.Add("boolean","type");
+            classifyTypes.Add("int","type");
+            classifyTypes.Add("float","type");
+            classifyTypes.Add("break","break_op");
+            classifyTypes.Add("false","bool_literal");
+            classifyTypes.Add("true","bool_literal");
+            classifyTypes.Add("if","if_stmt");
+            classifyTypes.Add("else","else_stmt");
+            classifyTypes.Add("while","while_stmt");
+            classifyTypes.Add("for","for_stmt");
+            classifyTypes.Add("new","new");
+            classifyTypes.Add("null","null");
+            classifyTypes.Add("private","private");
+            classifyTypes.Add("public","public");
+            classifyTypes.Add("return","return");
+            classifyTypes.Add("static","static");
+            classifyTypes.Add("super","super");
+            classifyTypes.Add("this","this");
+            classifyTypes.Add("void","void");
+            classifyTypes.Add("continue","continue");
+            classifyTypes.Add("class","class");
+            classifyTypes.Add("extends","extends");
+            classifyTypes.Add("print","print");
             return classifyTypes;
         }
     }
