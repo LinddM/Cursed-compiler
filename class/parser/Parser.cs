@@ -6,6 +6,28 @@ namespace Cursed_compiler
 {
     class Parser
     {
+		public static bool readTable(Dictionary<string, List<string>> tokensAndTypes, String [,] tableAction, String [] gramarG, int tokensNumber){
+			// tomar tokens de la file
+			var pretokens = tokensAndTypes.Values.ToList();
+			String [] inputTokens = new String[tokensAndTypes.Count];
+			for(int i=0; i<tokensAndTypes.Count; i++){
+				inputTokens[i]=pretokens[i].ToList()[1];
+			}
+			List<String> test=new List<string>();
+			// buscar token
+			for(int i=0; i<tokensAndTypes.Count; i++){
+				// buscar indice en el que se encuentra en la tabla
+				for(int j=0; j<tokensNumber; j++){
+					var mytok = inputTokens[i];
+					var tableToken=tableAction[tokensNumber, j];
+					if(mytok==tableToken){
+						test.Add("identifico");
+					}
+				}
+			}
+
+			return true;
+		}
         public static string[] Closure(string[] sI, string[] gramarGp)
 		{
 			var I = new List<string>(sI);
@@ -48,10 +70,15 @@ namespace Cursed_compiler
 		}
 
 		public static ICollection<string[]> Items(string[] gramarGp){
+			// aqui cambiamos de estados
+			// tomamos la primera produccion para establecer el primer estado
 			var sC = new List<string[]>();
 			string first = Tools.FirstProduction(gramarGp[0]);
+			// vemos el closure de la primera produccion
 			var n = Closure(new[] { first }, gramarGp);
 			sC.Add(n);
+			
+			// determinamos los siguientes estados con lo que falta de gramatica
 			for (var i = 0; i < sC.Count; i++){
 				var I = sC[i];
 				foreach (var prod in I) {
@@ -71,7 +98,7 @@ namespace Cursed_compiler
 			var noTerminals = Tools.GetNoTerminals (gramarGp);
 
 			var tokens = terminals.Union (noTerminals).ToArray();
-			var action = new string[setC.Count(), tokens.Count()];
+			var action = new string[setC.Count()+1, tokens.Count()];
 
 			for (int i = 0; i < setC.Count(); i++)
 			{

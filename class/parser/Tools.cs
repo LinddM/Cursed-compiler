@@ -99,8 +99,8 @@ namespace Cursed_compiler
 			return element.All(t => !char.IsUpper(t));
 		}
 
-		//[A -> α.Bβ, a]
 		public static string[] GetElements(string production){
+			// ver k pedo aca
 			string patternElement = string.Format ("{0}'?", _noTerminalPattern);
 			string patternAlpha = string.Format("( )*({0}|{1})?( )*\\.", _noTerminalPattern, _terminalPattern);
 			string patternBbeta = string.Format("\\.({0}|{1}| )+", _noTerminalPattern, _terminalPattern);
@@ -432,6 +432,7 @@ namespace Cursed_compiler
 
 		public static string FirstProduction(string cadena)
 		{
+			// reordena para separar produccion
 			var a = GetElements (cadena)[0];
 			var gama = GetGama (cadena)[0];
 			cadena = string.Format("{0} {1} .{2}, $", a, _produceElement, gama);

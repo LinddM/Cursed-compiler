@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Cursed_compiler
 {
@@ -63,47 +64,51 @@ namespace Cursed_compiler
                     case "scan":
                         Console.WriteLine(message + ": scanning");
                         Scanner scan = new Scanner(text, message);
+                        Console.WriteLine("Scan complete");
                         break;
                     case "parse":
                         Console.WriteLine(message + ": scanning");
+                        Scanner scan_parse = new Scanner(text, message);
+                        //scan_parse.tokensAndTypes.Values
+                        Console.WriteLine("Scan complete");
+
                         Console.WriteLine(message + ": parsing");
-                        var gramatica = "<program> : <class> <variable> <open_braces> <field_decl> <method_decl> <close_braces>\n"
-                                        +"<field_decl> : (<type> <variable>) | (<variable> <open_brackets> <number> <close_brackets>)\n"
-                                        +"<method_decl> : (<type> | <void>) <variable> <open_parents> <type> <variable> <block>\n"
-                                        +"<block> : <open_braces> <var_decl>* <statement>* <close_braces>\n"
-                                        +"<var_decl> : <type> <variable>\n"
-                                        +"<statement> : (<location> <assign_op> <expr>) | <method_call> | (<if_stmt> <open_parents> <expr> <close_parents> <block> [<else_stmt> <block>]) | <return> <expr> | <break> | <continue> | <block>\n"
-                                        +"<method_call> : (<variable> <open_parents> <expr>+ <close_parents>) | (<callout> <open_parents> <string_literal> <open_brackets> <callout_arg> <close_brackets> <close_parents>)\n"
-                                        +"<location> : <variable> | (<variable> <open_brackets> <expr> <close_brackets>)\n"
-                                        +"<expr> : <location> | <method_call> | <literal> | <expr> <bin_op> <expr> | !<expr> | (<open_parents> <expr> <close_parents>)\n"
-                                        +"<callout_arg> : <expr> | <string_literal>\n"
-                                        +"<char_literal> : <char_op> <variable> <char_op>\n"
-                                        +"<string_literal> : <string_op> <variable> <string_op>\n"
-                                        +"<bin_op> : <arith_op> | <rel_op> | <eq_op> | <cond_op>\n"
-                                        +"<literal> : <number> | <variable> | <bool_literal>";
-                        // separa producciones
-                        var gramarG = Tools.GetProductions(gramatica);
+                        
+                        String [] gramarG = new string [] 
+                        {
+                            "program : class variable open_braces field_decl close_braces",
+                            "field_decl : type variable",
+                            "field_decl : type variable open_brackets number close_brackets",
+                        };
                         // cambia estados
                         var setC = Parser.Items(gramarG).ToList();    
                         // forma la tabla
                         var tableAction = Parser.LRTable(setC, gramarG);
                         
-                        var terminals = Tools.GetTerminals(gramarG);
+                        var terminals = new String []{"$"}; //Tools.GetTerminals(gramarG);
                         var noTerminals = Tools.GetNoTerminals (gramarG);
                         var tokens = terminals.Union (noTerminals).ToArray();
 
-                        System.Console.Write ("\t");
-                        foreach(var token in tokens){
-                            System.Console.Write (token + "\t");
+                        // poner los tokens en la tabla
+                        for(int i=0; i<tokens.Length; i++){
+                            tableAction[setC.Count, i]=tokens[i];
                         }
-                        System.Console.Write("\n");
-                        for(int i = 0; i < tableAction.GetLength(0); i++){
-                            System.Console.Write (i + "\t");
-                            for(int j = 0; j < tableAction.GetLength(1); j++){
-                                System.Console.Write (tableAction[i,j] + "\t");
-                            }
-                            System.Console.Write ("\n");
-                        }
+
+                        var readTable = Parser.readTable(scan_parse.tokensAndTypes, tableAction, gramarG, tokens.Length);
+                        
+                        // System.Console.Write ("\t");
+                        // foreach(var token in tokens){
+                        //     System.Console.Write (token + "\t");
+                        // }
+                        // System.Console.Write("\n");
+                        // for(int i = 0; i < tableAction.GetLength(0); i++){
+                        //     System.Console.Write (i + "\t");
+                        //     for(int j = 0; j < tableAction.GetLength(1); j++){
+                        //         System.Console.Write (tableAction[i,j] + "\t");
+                        //     }
+                        //     System.Console.Write ("\n");
+                        // }
+                        // Console.WriteLine("Parse complete");
                         break;
                     case" ast":
                         Console.WriteLine(message + ": scanning");
