@@ -8,14 +8,14 @@ namespace Cursed_compiler
 {
     class Scanner
     {   
+        public Dictionary<string, List<string>> tokensAndTypes;
         public Scanner(string text, string mode)
         {
             Console.WriteLine("Inside scan");
 
             List<List<String>> myCleanTokens = cleanTokens(text, mode); // limpiar tokens
             // tokensAndTypes positions: Id, [line, type, value]
-            Dictionary<string, List<string>> tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
-            Console.WriteLine("Scan finished");
+            tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
         }        
 
         static Dictionary<string, List<string>> classify(List<List<String>> tokens){
@@ -35,15 +35,15 @@ namespace Cursed_compiler
                         Boolean hasType=false;
                         if(isVariable(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<variable>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"id", tokens[i][j]};
                         }
                         if(isObject(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<object>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"object", tokens[i][j]};
                         }
                         if(isNumber(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"number", tokens[i][j]};
                         }
                         if(!hasType){
                             if(tokens[i][j]!=""){
@@ -56,16 +56,16 @@ namespace Cursed_compiler
             }
 
 
-            var lista = myDict.Values.ToList();
-            int h = lista.Count;
-            using (StreamWriter file = new StreamWriter("output.csv"))
-                foreach (var entry in lista){
-                    if(entry[1]=="error"){
-                        Console.WriteLine("Error en la linea "+entry[0]+": "+entry[2]);
-                    }
-                    file.WriteLine(string.Join(",",entry)); 
-                }
-                Console.WriteLine("Lista de variables y tipos en output.csv");            
+            // var lista = myDict.Values.ToList();
+            // int h = lista.Count;
+            // using (StreamWriter file = new StreamWriter("output.csv"))
+            //     foreach (var entry in lista){
+            //         if(entry[1]=="error"){
+            //             Console.WriteLine("Error en la linea "+entry[0]+": "+entry[2]);
+            //         }
+            //         file.WriteLine(string.Join(",",entry)); 
+            //     }
+            //     Console.WriteLine("Lista de variables y tipos en output.csv");            
 
             return myDict;
         }
@@ -461,57 +461,55 @@ namespace Cursed_compiler
 
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
-            classifyTypes.Add("{","<open_braces>");
-            classifyTypes.Add(">=","<rel_op>");
-            classifyTypes.Add("<=","<rel_op>");
-
-            classifyTypes.Add("}","<close_braces>");
-            classifyTypes.Add("(","<open_parents>");
-            classifyTypes.Add(")","<close_parents>");
-            classifyTypes.Add("[","<open_brackets>");
-            classifyTypes.Add("]","<close_brackets>");
-            classifyTypes.Add("+","<arith_op>");
-            classifyTypes.Add("-","<arith_op>");
-            classifyTypes.Add("<","<rel_op>");
-            classifyTypes.Add(">","<rel_op>");
-            classifyTypes.Add("/","<arith_op>");
-            classifyTypes.Add("*","<arith_op>");
-            classifyTypes.Add("%","<arith_op>");
-            classifyTypes.Add("callout","<callout>");
-            classifyTypes.Add("=","<asign_op>");
-            classifyTypes.Add("+=","<asign_op>");
-            classifyTypes.Add("-=","<asign_op>");
-            classifyTypes.Add("==","<eq_op>");
-            classifyTypes.Add("!=","<not_eq_op>");
-            classifyTypes.Add("!","<exclam>"); // hay que quitarlo
-            classifyTypes.Add("&&","<cond_op>");
-            classifyTypes.Add("||","<cond_op>");
-            classifyTypes.Add("\"", "<string_op>"); // (char)34
-            classifyTypes.Add("'", "<char_op>"); // (char)39
-            classifyTypes.Add(",","<comma_sep>");
-            classifyTypes.Add("boolean","<type>");
-            classifyTypes.Add("int","<type>");
-            classifyTypes.Add("float","<type>");
-            classifyTypes.Add("break","<break_op>");
-            classifyTypes.Add("false","<bool_literal>");
-            classifyTypes.Add("true","<bool_literal>");
-            classifyTypes.Add("if","<if_stmt>");
-            classifyTypes.Add("else","<else_stmt>");
-            classifyTypes.Add("while","<while_stmt>");
-            classifyTypes.Add("for","<for_stmt>");
-            classifyTypes.Add("new","<new>");
-            classifyTypes.Add("null","<null>");
-            classifyTypes.Add("private","<private>");
-            classifyTypes.Add("public","<public>");
-            classifyTypes.Add("return","<return>");
-            classifyTypes.Add("static","<static>");
-            classifyTypes.Add("super","<super>");
-            classifyTypes.Add("this","<this>");
-            classifyTypes.Add("void","<void>");
-            classifyTypes.Add("continue","<continue>");
-            classifyTypes.Add("class","<class>");
-            classifyTypes.Add("extends","<extends>");
-            classifyTypes.Add("print","<print>");
+            classifyTypes.Add("{","open_braces");
+            classifyTypes.Add(">=","rel_op");
+            classifyTypes.Add("<=","rel_op");
+            classifyTypes.Add("}","close_braces");
+            classifyTypes.Add("(","open_parents");
+            classifyTypes.Add(")","close_parents");
+            classifyTypes.Add("[","open_brackets");
+            classifyTypes.Add("]","close_brackets");
+            classifyTypes.Add("+","arith_op");
+            classifyTypes.Add("-","arith_op");
+            classifyTypes.Add("<","rel_op");
+            classifyTypes.Add(">","rel_op");
+            classifyTypes.Add("/","arith_op");
+            classifyTypes.Add("*","arith_op");
+            classifyTypes.Add("%","arith_op");
+            classifyTypes.Add("callout","callout");
+            classifyTypes.Add("=","asign_op");
+            classifyTypes.Add("+=","asign_op");
+            classifyTypes.Add("-=","asign_op");
+            classifyTypes.Add("==","eq_op");
+            classifyTypes.Add("!=","not_eq_op");
+            classifyTypes.Add("!","exclam"); // hay que quitarlo
+            classifyTypes.Add("&&","cond_op");
+            classifyTypes.Add("||","cond_op");
+            classifyTypes.Add("\"", "string_op"); // (char)34
+            classifyTypes.Add("'", "char_op"); // (char)39
+            classifyTypes.Add(",","comma_sep");
+            classifyTypes.Add("boolean","type");
+            classifyTypes.Add("int","type");
+            classifyTypes.Add("float","type");
+            classifyTypes.Add("break","break_op");
+            classifyTypes.Add("false","bool_literal");
+            classifyTypes.Add("true","bool_literal");
+            classifyTypes.Add("if","if_stmt");
+            classifyTypes.Add("else","else_stmt");
+            classifyTypes.Add("while","while_stmt");
+            classifyTypes.Add("for","for_stmt");
+            classifyTypes.Add("new","new");
+            classifyTypes.Add("null","null");
+            classifyTypes.Add("private","private");
+            classifyTypes.Add("public","public");
+            classifyTypes.Add("return","return");
+            classifyTypes.Add("static","static");
+            classifyTypes.Add("super","super");
+            classifyTypes.Add("this","this");
+            classifyTypes.Add("void","void");
+            classifyTypes.Add("continue","continue");
+            classifyTypes.Add("class","class");
+            classifyTypes.Add("extends","extends");
             return classifyTypes;
         }
     }
