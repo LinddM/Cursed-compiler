@@ -461,9 +461,11 @@ namespace Cursed_compiler
 
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
+
             classifyTypes.Add("{","open_braces");
             classifyTypes.Add(">=","rel_op");
             classifyTypes.Add("<=","rel_op");
+
             classifyTypes.Add("}","close_braces");
             classifyTypes.Add("(","open_parents");
             classifyTypes.Add(")","close_parents");
@@ -510,6 +512,7 @@ namespace Cursed_compiler
             classifyTypes.Add("continue","continue");
             classifyTypes.Add("class","class");
             classifyTypes.Add("extends","extends");
+
             return classifyTypes;
         }
     }
