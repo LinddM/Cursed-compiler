@@ -35,15 +35,15 @@ namespace Cursed_compiler
                         Boolean hasType=false;
                         if(isVariable(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<variable>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"id", tokens[i][j]};
                         }
                         if(isObject(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<object>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"object", tokens[i][j]};
                         }
                         if(isNumber(tokens[i][j])){
                             hasType=true;
-                            lineType = new List<string>(){(i+1).ToString(),"<number>", tokens[i][j]};
+                            lineType = new List<string>(){(i+1).ToString(),"number", tokens[i][j]};
                         }
                         if(!hasType){
                             if(tokens[i][j]!=""){
@@ -510,7 +510,6 @@ namespace Cursed_compiler
             classifyTypes.Add("continue","continue");
             classifyTypes.Add("class","class");
             classifyTypes.Add("extends","extends");
-            classifyTypes.Add("print","print");
             return classifyTypes;
         }
     }
