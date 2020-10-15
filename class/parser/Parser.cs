@@ -5,28 +5,74 @@ using System.Linq;
 namespace Cursed_compiler
 {
     class Parser
-    {
-		public static bool readTable(Dictionary<string, List<string>> tokensAndTypes, String [,] tableAction, String [] gramarG, int tokensNumber){
+    { 
+		public static List<String> applyReduce(List<String> myStack, String gramarRule){
+			String head = gramarRule.Split(' ')[0];
+			String theStack = String.Join(" ", myStack.ToArray());
+
+			int temp = gramarRule.IndexOf(": ")+2;
+			String rule = gramarRule.Substring(temp);
+			var newStack = theStack.Replace(rule, head);
+
+			myStack = newStack.Split(' ').ToList();
+			return myStack;
+		}
+		public static List<String> lastCheckReduce(List<String> myStack, String [] gramarRules){
+			String theStack = String.Join(" ", myStack.ToArray());
+			foreach(String gramarRule in gramarRules){
+				int temp = gramarRule.IndexOf(": ")+2;
+				String rule = gramarRule.Substring(temp);
+				if(rule == theStack){
+					String head = gramarRule.Split(' ')[0];
+					myStack = head.Split(' ').ToList();
+					break;
+				}
+			}
+			if(myStack[0]=="program"){
+				myStack.Clear();
+				myStack.Add("$");
+			}
+			return myStack;
+		}
+		public static List<String> readInTable(int myState, String token, int tokensNumber, String [,] tableAction, List<String> myStack, String [] inputTokens, int index, String [] gramarG){
+			// buscar indice en el que se encuentra en la tabla
+			for(int j=0; j<tokensNumber; j++){
+				int size = tableAction.GetLength(0)-1;
+				var tableToken=tableAction[size, j];
+				if(token==tableToken){
+					var pos=tableAction[myState,j];
+					if(pos!=null){
+						if(pos[0]=='s'){
+							myStack.Add(token);
+							myState=int.Parse(pos.Substring(1));
+							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG);
+						}else if(pos[0]=='r'){
+							myStack.Add(token);
+							int reduceRuleNum = int.Parse(pos.Substring(1));
+							myStack = applyReduce(myStack, gramarG[reduceRuleNum]);
+						}else{
+							myStack.Add("aceptar");
+						}
+					}
+				}
+			}
+			//myStack = lastCheckReduce(myStack, gramarG);
+			return myStack;
+		}
+		public static List<String> readTable(Dictionary<string, List<string>> tokensAndTypes, String [,] tableAction, String [] gramarG, int tokensNumber){
 			// tomar tokens de la file
 			var pretokens = tokensAndTypes.Values.ToList();
 			String [] inputTokens = new String[tokensAndTypes.Count];
 			for(int i=0; i<tokensAndTypes.Count; i++){
 				inputTokens[i]=pretokens[i].ToList()[1];
 			}
-			List<String> test=new List<string>();
-			// buscar token
-			for(int i=0; i<tokensAndTypes.Count; i++){
-				// buscar indice en el que se encuentra en la tabla
-				for(int j=0; j<tokensNumber; j++){
-					var mytok = inputTokens[i];
-					var tableToken=tableAction[tokensNumber, j];
-					if(mytok==tableToken){
-						test.Add("identifico");
-					}
-				}
-			}
 
-			return true;
+			List<String> myStack = new List<string>();
+			int myState=0;
+			// buscar token
+			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG);
+
+			return myStack;
 		}
         public static string[] Closure(string[] sI, string[] gramarGp)
 		{
