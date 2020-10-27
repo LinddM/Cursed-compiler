@@ -4,8 +4,27 @@ using System.Linq;
 
 namespace Cursed_compiler
 {
+	// structure to build AST
+	class AST{
+        public string definition;
+		public string data;
+        public List<AST> children;
+        public AST(string definition, string data){
+            this.definition=definition;
+			this.data=data;
+        }
+       
+    }
     class Parser
     { 
+		public static List<String> lastReduce(List<String> myStack, String [] gramarG){
+			myStack.Add("close_braces");
+			myStack = lastCheckReduce(myStack, gramarG);
+			myStack.Add("method_decl");
+			myStack.Add("close_braces");
+			myStack = lastCheckReduce(myStack, gramarG);
+			return myStack;
+		}
 		public static List<String> applyReduce(List<String> myStack, String gramarRule){
 			String head = gramarRule.Split(' ')[0];
 			String theStack = String.Join(" ", myStack.ToArray());
@@ -22,15 +41,14 @@ namespace Cursed_compiler
 			foreach(String gramarRule in gramarRules){
 				int temp = gramarRule.IndexOf(": ")+2;
 				String rule = gramarRule.Substring(temp);
-				if(rule == theStack){
+				bool sub = theStack.Contains(rule); // corregir esto para que lo lea bien
+				if(sub){
 					String head = gramarRule.Split(' ')[0];
-					myStack = head.Split(' ').ToList();
+					int myStackInd = myStack.IndexOf(rule.Split(' ')[0]);
+					myStack = myStack.GetRange(0, myStackInd);
+					myStack.Add(head);
 					break;
 				}
-			}
-			if(myStack[0]=="program"){
-				myStack.Clear();
-				myStack.Add("$");
 			}
 			return myStack;
 		}
@@ -40,18 +58,18 @@ namespace Cursed_compiler
 				int size = tableAction.GetLength(0)-1;
 				var tableToken=tableAction[size, j];
 				if(token==tableToken){
-					var pos=tableAction[myState,j];
+					var pos=tableAction[myState,j]; // ver aqui
 					if(pos!=null){
 						if(pos[0]=='s'){
 							myStack.Add(token);
 							myState=int.Parse(pos.Substring(1));
 							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG);
+							break;
 						}else if(pos[0]=='r'){
-							myStack.Add(token);
 							int reduceRuleNum = int.Parse(pos.Substring(1));
 							myStack = applyReduce(myStack, gramarG[reduceRuleNum]);
-						}else{
-							myStack.Add("aceptar");
+							myStack.Add(token);
+							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG);
 						}
 					}
 				}
@@ -70,8 +88,8 @@ namespace Cursed_compiler
 			List<String> myStack = new List<string>();
 			int myState=0;
 			// buscar token
-			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG);
-
+			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG);	//myStack = lastReduce(myStack, gramarG);
+			
 			return myStack;
 		}
         public static string[] Closure(string[] sI, string[] gramarGp)
