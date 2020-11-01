@@ -8,7 +8,9 @@ namespace Cursed_compiler
 	class AST{
         public string definition;
 		public string data;
-        public List<AST> children;
+        public List<AST> parent;
+		public List<AST> children;
+		public List<AST> siblings;
         public AST(string definition, string data){
             this.definition=definition;
 			this.data=data;
@@ -17,14 +19,7 @@ namespace Cursed_compiler
     }
     class Parser
     { 
-		public static List<String> lastReduce(List<String> myStack, String [] gramarG){
-			myStack.Add("close_braces");
-			myStack = lastCheckReduce(myStack, gramarG);
-			myStack.Add("method_decl");
-			myStack.Add("close_braces");
-			myStack = lastCheckReduce(myStack, gramarG);
-			return myStack;
-		}
+		
 		public static List<String> applyReduce(List<String> myStack, String gramarRule){
 			String head = gramarRule.Split(' ')[0];
 			String theStack = String.Join(" ", myStack.ToArray());
@@ -36,15 +31,25 @@ namespace Cursed_compiler
 			myStack = newStack.Split(' ').ToList();
 			return myStack;
 		}
+		public static bool allowReduce(String myStack, String rule){
+			// arreglar field_decl y var_decl creo
+			bool ans=true;
+			if(myStack.IndexOf("class id open_braces field_decl method_decl_type open_parents var_decl")!=-1 && rule=="var_decl"){
+				ans=false;
+			}
+			return ans;
+		}
 		public static List<String> lastCheckReduce(List<String> myStack, String [] gramarRules){
 			String theStack = String.Join(" ", myStack.ToArray());
 			foreach(String gramarRule in gramarRules){
 				int temp = gramarRule.IndexOf(": ")+2;
 				String rule = gramarRule.Substring(temp);
+				
 				bool sub = theStack.Contains(rule); // corregir esto para que lo lea bien
-				if(sub){
+				// maybe ver si la regla es el ultimo token en el string
+				if(sub && allowReduce(theStack, rule)){
 					String head = gramarRule.Split(' ')[0];
-					int myStackInd = myStack.IndexOf(rule.Split(' ')[0]);
+					int myStackInd = myStack.LastIndexOf(rule.Split(' ')[0]);
 					myStack = myStack.GetRange(0, myStackInd);
 					myStack.Add(head);
 					break;
@@ -52,43 +57,82 @@ namespace Cursed_compiler
 			}
 			return myStack;
 		}
-		public static List<String> readInTable(int myState, String token, int tokensNumber, String [,] tableAction, List<String> myStack, String [] inputTokens, int index, String [] gramarG){
+		public static List<String> readInTable(int myState, String token, int tokensNumber, String [,] tableAction, List<String> myStack, String [] inputTokens, int index, String [] gramarG, List<int> stateStack){
 			// buscar indice en el que se encuentra en la tabla
 			for(int j=0; j<tokensNumber; j++){
 				int size = tableAction.GetLength(0)-1;
 				var tableToken=tableAction[size, j];
 				if(token==tableToken){
-					var pos=tableAction[myState,j]; // ver aqui
+					var pos=tableAction[myState,j];
 					if(pos!=null){
 						if(pos[0]=='s'){
 							myStack.Add(token);
 							myState=int.Parse(pos.Substring(1));
-							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG);
+							stateStack.Add(myState);
+							// pasar aqui un pedazo para corroborar reducciones
+							List <string> newStack = lastCheckReduce(myStack, gramarG);
+							if(myStack != newStack){
+								// poner esto en otro lado
+								// if(myStack[myStack.Count-1]=="var_decl" && newStack[newStack.Count-1]=="field_decl"){
+								// 	myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
+								// }
+								// manejo de estados
+								int myDiff=0;
+								for(int e=0; e<myStack.Count; e++){
+									if(e<newStack.Count){
+										if(newStack[e]!=myStack[e]){
+											myDiff++;
+										}
+									}else{
+										myDiff+=myStack.Count-newStack.Count;
+										break;
+									}
+								}
+								for(int y=0; y<myDiff; y++){
+									stateStack.RemoveAt(stateStack.Count-1);
+								}
+								String myReplacement = newStack[newStack.Count-1];
+								if(myReplacement=="program"){
+									return newStack;
+								}
+								newStack.RemoveAt(newStack.Count-1);
+
+
+								// construir AST aqui a partir del nuevo y viejo stack
+
+
+								myStack = readInTable(stateStack[stateStack.Count-1], myReplacement, tokensNumber, tableAction, newStack, inputTokens, index, gramarG, stateStack);
+							}else{
+								myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
+							}
 							break;
 						}else if(pos[0]=='r'){
 							int reduceRuleNum = int.Parse(pos.Substring(1));
 							myStack = applyReduce(myStack, gramarG[reduceRuleNum]);
-							myStack.Add(token);
-							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG);
+							//myStack.Add(token);
+							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
 						}
 					}
 				}
 			}
-			//myStack = lastCheckReduce(myStack, gramarG);
 			return myStack;
 		}
 		public static List<String> readTable(Dictionary<string, List<string>> tokensAndTypes, String [,] tableAction, String [] gramarG, int tokensNumber){
 			// tomar tokens de la file
 			var pretokens = tokensAndTypes.Values.ToList();
 			String [] inputTokens = new String[tokensAndTypes.Count];
+			String [] valuesTokens = new String[tokensAndTypes.Count];
 			for(int i=0; i<tokensAndTypes.Count; i++){
 				inputTokens[i]=pretokens[i].ToList()[1];
+				valuesTokens[i]=pretokens[i].ToList()[2];
 			}
 
 			List<String> myStack = new List<string>();
+			List<int> stateStack = new List<int>();
 			int myState=0;
 			// buscar token
-			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG);	//myStack = lastReduce(myStack, gramarG);
+			// falta mandar lista de valores de tokens
+			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG, stateStack);
 			
 			return myStack;
 		}
@@ -175,6 +219,7 @@ namespace Cursed_compiler
 					if (index != -1)                    
 						action[i, j] = isTerminal ? string.Format("s{0}", index) : index.ToString();
 
+					// si el token no es terminal se busca un reduce
 					if (isTerminal)
 					{
 						for (int prod = 0; prod < setC[i].Count(); prod++)

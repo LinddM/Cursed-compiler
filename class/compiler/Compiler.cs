@@ -76,22 +76,27 @@ namespace Cursed_compiler
                         
                         String [] gramarG = new string [] 
                         {
-                            "program : class id open_braces field_decl close_braces",
-                            "field_decl : var_decl",
+                            "program : class id open_braces field_decl method_decl close_braces",
                             "field_decl : var_decl open_brackets number close_brackets",
+                            "field_decl : var_decl",
+                            // "program : class id open_braces field_decl_list method_decl close_braces",
+                            // "field_decl : var_decl open_brackets number close_brackets",
+                            // "field_decl : var_decl",
+                            // "field_decl_list : field_decl",
+                            // "field_decl_list : field_decl field_decl_list",
                             "var_decl : type id",
-                            // "method_decl_type : type id",
-                            // "method_decl_type : void id",
-                            // "method_decl : method_decl_type open_parents var_decl close_parents block",
-                            // "block : open_braces var_decl statement close_braces",
-                            // "statement : break",
-                            // "statement : location assign_op expr",
-                            // "statement : method_call",
-                            // "statement : if_stmt open_parents expr close_parents block",
-                            // "statement : if_stmt open_parents expr close_parents block else_stmt block",
-                            // "statement : return expr",
-                            // "statement : continue",
-                            // "statement : block",
+                            "method_decl_type : type id",
+                            "method_decl_type : void id",
+                            "method_decl : method_decl_type open_parents var_decl close_parents block",
+                            "block : open_braces var_decl statement close_braces",
+                            "statement : break_op",
+                            "statement : location assign_op expr",
+                            "statement : method_call",
+                            "statement : if_stmt open_parents expr close_parents block",
+                            "statement : if_stmt open_parents expr close_parents block else_stmt block",
+                            "statement : return expr",
+                            "statement : continue",
+                            "statement : block",
                             // "method_call : id open_parents expr close_parents",
                             // "method_call : callout open_parents string_literal open_brackets callout_arg close_brackets close_parents",
                             // "location : id",
@@ -128,6 +133,7 @@ namespace Cursed_compiler
                             tableAction[setC.Count, i]=tokens[i];
                         }
 
+                        // retornar AST
                         var readTable = Parser.readTable(scan_parse.tokensAndTypes, tableAction, gramarG, tokens.Length);
                         
                         Console.WriteLine("Parse complete");
