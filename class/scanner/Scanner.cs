@@ -465,7 +465,6 @@ namespace Cursed_compiler
             classifyTypes.Add("{","open_braces");
             classifyTypes.Add(">=","rel_op");
             classifyTypes.Add("<=","rel_op");
-
             classifyTypes.Add("}","close_braces");
             classifyTypes.Add("(","open_parents");
             classifyTypes.Add(")","close_parents");

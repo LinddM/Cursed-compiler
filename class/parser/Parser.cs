@@ -8,7 +8,6 @@ namespace Cursed_compiler
 	class AST{
         public string definition;
 		public string data;
-        public List<AST> parent;
 		public List<AST> children;
 		public List<AST> siblings;
         public AST(string definition, string data){
@@ -19,6 +18,54 @@ namespace Cursed_compiler
     }
     class Parser
     { 
+		public static AST giveHead(List<String> myStack, List<String> newStack, AST myTree, String head, String [] gramarG){
+			// agrupar los hermanos para hacer cabeza
+			if(head==null){
+				AST newTree = new AST("new scope", null);
+				newTree.children=new List<AST>(){new AST(myTree.definition, myTree.data)};
+				newTree.siblings=new List<AST>();
+				for(int i=0; i<myTree.siblings.Count; i++){
+					newTree.children.Add(myTree.siblings[i]);
+				}
+				myTree=newTree;
+			}else{
+				foreach(String gramarRule in gramarG){
+					String rule = gramarRule.Split(' ')[0];
+					if(head==rule){
+						AST newTree = new AST(head, null);
+						newTree.children=new List<AST>(){new AST(myTree.definition, myTree.data)};
+						newTree.siblings=new List<AST>();
+						for(int i=0; i<myTree.siblings.Count; i++){
+							newTree.children.Add(myTree.siblings[i]);
+						}
+						myTree=newTree;
+					}
+				}
+			}
+			
+			return myTree;
+		}
+		public static AST giveBranch(AST myTree, String token, String valToken, String [] gramarG){
+			// esto pasa solo al entrar el primer token
+			if(myTree.data==null && myTree.definition==null){
+				myTree.data=valToken;
+				myTree.definition=token;
+			}else{
+				// ver jerarquia
+				bool isHead=false;
+				foreach(String gramarRule in gramarG){
+					String head = gramarRule.Split(' ')[0];
+					if(head==token)
+						isHead=true;
+				}
+				if(isHead){
+					myTree.children.Add(new AST(token, valToken));
+				}else{
+					myTree.siblings.Add(new AST(token, valToken));
+				}
+			}
+			return myTree;
+		}
 		
 		public static List<String> applyReduce(List<String> myStack, String gramarRule){
 			String head = gramarRule.Split(' ')[0];
@@ -57,7 +104,7 @@ namespace Cursed_compiler
 			}
 			return myStack;
 		}
-		public static List<String> readInTable(int myState, String token, int tokensNumber, String [,] tableAction, List<String> myStack, String [] inputTokens, int index, String [] gramarG, List<int> stateStack){
+		public static List<String> readInTable(int myState, String token, int tokensNumber, String [,] tableAction, List<String> myStack, String [] inputTokens, int index, String [] gramarG, List<int> stateStack, String [] valuesOfTokens, String valToken, AST tree){
 			// buscar indice en el que se encuentra en la tabla
 			for(int j=0; j<tokensNumber; j++){
 				int size = tableAction.GetLength(0)-1;
@@ -72,10 +119,7 @@ namespace Cursed_compiler
 							// pasar aqui un pedazo para corroborar reducciones
 							List <string> newStack = lastCheckReduce(myStack, gramarG);
 							if(myStack != newStack){
-								// poner esto en otro lado
-								// if(myStack[myStack.Count-1]=="var_decl" && newStack[newStack.Count-1]=="field_decl"){
-								// 	myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
-								// }
+
 								// manejo de estados
 								int myDiff=0;
 								for(int e=0; e<myStack.Count; e++){
@@ -92,25 +136,27 @@ namespace Cursed_compiler
 									stateStack.RemoveAt(stateStack.Count-1);
 								}
 								String myReplacement = newStack[newStack.Count-1];
+
+								// poner nueva cabeza en AST
+								tree = giveHead(myStack, newStack, tree, myReplacement, gramarG);
+
 								if(myReplacement=="program"){
 									return newStack;
 								}
 								newStack.RemoveAt(newStack.Count-1);
 
-
-								// construir AST aqui a partir del nuevo y viejo stack
-
-
-								myStack = readInTable(stateStack[stateStack.Count-1], myReplacement, tokensNumber, tableAction, newStack, inputTokens, index, gramarG, stateStack);
+								myStack = readInTable(stateStack[stateStack.Count-1], myReplacement, tokensNumber, tableAction, newStack, inputTokens, index, gramarG, stateStack, valuesOfTokens, valuesOfTokens[index], tree);
 							}else{
-								myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
+								// poner nueva rama o cabeza en AST
+								if(token=="open_braces" || token=="open_parents" || token=="open_brackets"){
+									tree = giveHead(myStack, newStack, tree, null, gramarG);
+								}else{
+									tree = giveBranch(tree, valToken, token, gramarG);
+								}
+
+								myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack, valuesOfTokens, valuesOfTokens[index+1], tree);
 							}
 							break;
-						}else if(pos[0]=='r'){
-							int reduceRuleNum = int.Parse(pos.Substring(1));
-							myStack = applyReduce(myStack, gramarG[reduceRuleNum]);
-							//myStack.Add(token);
-							myStack = readInTable(myState, inputTokens[index+1], tokensNumber, tableAction, myStack, inputTokens, index+1, gramarG, stateStack);
 						}
 					}
 				}
@@ -130,9 +176,11 @@ namespace Cursed_compiler
 			List<String> myStack = new List<string>();
 			List<int> stateStack = new List<int>();
 			int myState=0;
-			// buscar token
-			// falta mandar lista de valores de tokens
-			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG, stateStack);
+
+			AST myTree = new AST(null, null);
+			myTree.children=new List<AST>();
+			myTree.siblings=new List<AST>();
+			myStack = readInTable(myState, inputTokens[myState], tokensNumber, tableAction, myStack, inputTokens, myState, gramarG, stateStack, valuesTokens, valuesTokens[myState], myTree);
 			
 			return myStack;
 		}

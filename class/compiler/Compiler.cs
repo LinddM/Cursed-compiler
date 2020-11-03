@@ -92,11 +92,11 @@ namespace Cursed_compiler
                             "statement : break_op",
                             "statement : location assign_op expr",
                             "statement : method_call",
-                            "statement : if_stmt open_parents expr close_parents block",
-                            "statement : if_stmt open_parents expr close_parents block else_stmt block",
-                            "statement : return expr",
-                            "statement : continue",
-                            "statement : block",
+                            // "statement : if_stmt open_parents expr close_parents block",
+                            // "statement : if_stmt open_parents expr close_parents block else_stmt block",
+                            // "statement : return expr",
+                            // "statement : continue",
+                            // "statement : block",
                             // "method_call : id open_parents expr close_parents",
                             // "method_call : callout open_parents string_literal open_brackets callout_arg close_brackets close_parents",
                             // "location : id",
@@ -138,16 +138,22 @@ namespace Cursed_compiler
                         
                         Console.WriteLine("Parse complete");
                         break;
-                    case" ast":
+                    case "ast":
                         Console.WriteLine(message + ": scanning");
                         Console.WriteLine(message + ": parsing");
                         Console.WriteLine(message + ": ast");
                         break;
-                    case" semantic":
+                    case "semantic":
                         Console.WriteLine(message + ": scanning");
+                        Scanner semPhase = new Scanner(text, message);
+                        Console.WriteLine("Scan complete");
+
                         Console.WriteLine(message + ": parsing");
                         Console.WriteLine(message + ": ast");
+
                         Console.WriteLine(message + ": semantic");
+                        Semantic semanticPhase = new Semantic(semPhase.tokensAndTypes);
+                        Console.WriteLine("Fulfills semantic check: " + semanticPhase.uniqueVarsCheck);
                         break;
                     case" irt":
                         Console.WriteLine(message + ": scanning");
