@@ -66,102 +66,65 @@ namespace Cursed_compiler
                         Scanner scan = new Scanner(text, message);
                         Console.WriteLine("Scan complete");
                         break;
+                        
                     case "parse":
                         Console.WriteLine(message + ": scanning");
                         Scanner scan_parse = new Scanner(text, message);
-                        
                         Console.WriteLine("Scan complete");
 
                         Console.WriteLine(message + ": parsing");
-                        
-                        String [] gramarG = new string [] 
-                        {
-                            "program : class id open_braces field_decl method_decl close_braces",
-                            "field_decl : var_decl open_brackets number close_brackets",
-                            "field_decl : var_decl",
-                            // "program : class id open_braces field_decl_list method_decl close_braces",
-                            // "field_decl : var_decl open_brackets number close_brackets",
-                            // "field_decl : var_decl",
-                            // "field_decl_list : field_decl",
-                            // "field_decl_list : field_decl field_decl_list",
-                            "var_decl : type id",
-                            "method_decl_type : type id",
-                            "method_decl_type : void id",
-                            "method_decl : method_decl_type open_parents var_decl close_parents block",
-                            "block : open_braces var_decl statement close_braces",
-                            "statement : break_op",
-                            "statement : location assign_op expr",
-                            "statement : method_call",
-                            // "statement : if_stmt open_parents expr close_parents block",
-                            // "statement : if_stmt open_parents expr close_parents block else_stmt block",
-                            // "statement : return expr",
-                            // "statement : continue",
-                            // "statement : block",
-                            // "method_call : id open_parents expr close_parents",
-                            // "method_call : callout open_parents string_literal open_brackets callout_arg close_brackets close_parents",
-                            // "location : id",
-                            // "location : id open_brackets expr close_brackets",
-                            // "expr : location",
-                            // "expr : method_call",
-                            // "expr : literal",
-                            // "expr : expr bin_op expr",
-                            // "expr : expr",
-                            // "expr : open_parents expr close_parents",
-                            // "callout_arg : expr",
-                            // "callout_arg : string_literal",
-                            // "char_literal : char_op id char_op",
-                            // "string_literal : string_op id string_op",
-                            // "bin_op : arith_op",
-                            // "bin_op : rel_op",
-                            // "bin_op : eq_op",
-                            // "bin_op : cond_op",
-                            // "literal : number",
-                            // "literal : char_literal",
-                            // "literal : bool_literal"
-                        };
-                        // cambia estados
-                        var setC = Parser.Items(gramarG).ToList();    
-                        // forma la tabla
-                        var tableAction = Parser.LRTable(setC, gramarG);
-                        
-                        var terminals = Tools.GetTerminals(gramarG);
-                        var noTerminals = Tools.GetNoTerminals (gramarG);
-                        var tokens = terminals.Union (noTerminals).ToArray();
-
-                        // poner los tokens en la tabla
-                        for(int i=0; i<tokens.Length; i++){
-                            tableAction[setC.Count, i]=tokens[i];
-                        }
-
-                        // retornar AST
-                        var readTable = Parser.readTable(scan_parse.tokensAndTypes, tableAction, gramarG, tokens.Length);
-                        
+                        Parser parse = new Parser(scan_parse);
                         Console.WriteLine("Parse complete");
                         break;
+
                     case "ast":
                         Console.WriteLine(message + ": scanning");
+                        Scanner scan_ast = new Scanner(text, message);
+                        Console.WriteLine("Scan complete");
+
                         Console.WriteLine(message + ": parsing");
+                        Parser parse_ast = new Parser(scan_ast);
+                        Console.WriteLine("Parse complete");
+
                         Console.WriteLine(message + ": ast");
+                        Ast tree = new Ast(parse_ast, scan_ast.tokensAndTypes);
                         break;
+
                     case "semantic":
                         Console.WriteLine(message + ": scanning");
                         Scanner semPhase = new Scanner(text, message);
                         Console.WriteLine("Scan complete");
 
                         Console.WriteLine(message + ": parsing");
+                        Parser parse_sem = new Parser(semPhase);
+                        Console.WriteLine("Parse complete");
+
                         Console.WriteLine(message + ": ast");
+                        Ast as_tree = new Ast(parse_sem, semPhase.tokensAndTypes);
 
                         Console.WriteLine(message + ": semantic");
                         Semantic semanticPhase = new Semantic(semPhase.tokensAndTypes);
                         Console.WriteLine("Fulfills semantic check: " + semanticPhase.uniqueVarsCheck);
                         break;
-                    case" irt":
+                        
+                    case "irt":
                         Console.WriteLine(message + ": scanning");
+                        Scanner scanIrt = new Scanner(text, message);
+                        Console.WriteLine("Scan complete");
+
                         Console.WriteLine(message + ": parsing");
+                        Parser parse_irt = new Parser(scanIrt);
+                        Console.WriteLine("Parse complete");
+
                         Console.WriteLine(message + ": ast");
+                        Ast irt_tree = new Ast(parse_irt, scanIrt.tokensAndTypes);
+
                         Console.WriteLine(message + ": semantic");
+
                         Console.WriteLine(message + ": irt");
+                        Irt intermediate = new Irt(irt_tree, scanIrt.tokensAndTypes);
                         break;
+
                     case "codegen":
                         Console.WriteLine(message + ": scanning");
                         Console.WriteLine(message + ": parsing");
