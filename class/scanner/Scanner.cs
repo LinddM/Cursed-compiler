@@ -11,8 +11,6 @@ namespace Cursed_compiler
         public Dictionary<string, List<string>> tokensAndTypes;
         public Scanner(string text, string mode)
         {
-            Console.WriteLine("Inside scan");
-
             List<List<String>> myCleanTokens = cleanTokens(text, mode); // limpiar tokens
             // tokensAndTypes positions: Id, [line, type, value]
             tokensAndTypes = new Dictionary<string, List<string>>(classify(myCleanTokens)); // lista de tipos
@@ -392,17 +390,11 @@ namespace Cursed_compiler
                     }
 
                 }else{
-                    
-
                     if(accum!="" ){
                         myTokens.Add(accum);
                         myTokens.Add(tokens[i].ToString());
 
                     }else{
-                        
-                        
-                        
-
                         myTokens.Add(tokens[i].ToString());
                     }
                     accum="";
@@ -423,49 +415,33 @@ namespace Cursed_compiler
 
             
             for(var i =0; i <myTokens.Count-1;i++){
-                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=") || (myTokens[i] == "-" && myTokens[i+1] == "-=") || (myTokens[i] == "+" && myTokens[i+1] == "+=") ){
+                if((myTokens[i] == ">" && myTokens[i+1] == ">=") || (myTokens[i] == "<" && myTokens[i+1] == "<=") || (myTokens[i] == "!" && myTokens[i+1] == "!=") || (myTokens[i] == "-" && myTokens[i+1] == "-=") || (myTokens[i] == "+" && myTokens[i+1] == "+=") || (myTokens[i] == "=" && myTokens[i+1] == "==")){
                     myTokens.Remove(myTokens[i]);
-
 
                     
                 }else if ((myTokens[i] == "&" && myTokens[i+1] == "&") || (myTokens[i] == "|" && myTokens[i+1] == "|")  ){
                         accum2 = tokens[i].ToString()+tokens[i+1].ToString();
                         myTokens.Add(accum2);
                         i++;
-
                 }
-
-                
-                
             }
             for(var i =0; i <myTokens.Count-1;i++){
                 if((myTokens[i] == "&" && myTokens[i+1] == "&" /*&& myTokens[i+2] == "&&")  || (myTokens[i] == "|" && myTokens[i+1] == "|") || (myTokens[i] == "-" && myTokens[i+1] == "=") || (myTokens[i] == "+" && myTokens[i+1] == "="*/)){
                     myTokens.Remove(myTokens[i]);
                     myTokens.Remove(myTokens[i+1]);
-                    
-
                 }
-
             }
-
-            
-
-
-            
             myTokens.Add(accum);
             
             return myTokens;
         }
         
-
-
         static Hashtable typesOfTokens(){
             Hashtable classifyTypes = new Hashtable();
 
             classifyTypes.Add("{","open_braces");
             classifyTypes.Add(">=","rel_op");
             classifyTypes.Add("<=","rel_op");
-
             classifyTypes.Add("}","close_braces");
             classifyTypes.Add("(","open_parents");
             classifyTypes.Add(")","close_parents");
