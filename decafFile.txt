@@ -1,15 +1,12 @@
 
 class Foo {  //  Declare a class named Foo
-    int key=3;
+    int key = 3;
     void kitty(int hello){
-        int myVar;
-        break;
-        if(key==6){
-            key=myVar+hello;
+        int myVar = 8;
+        if(key == 6){
+            key = myVar+9;
         }
-        if(key==8){
-            myVar=+key;
-        }
-        boolean temp=false;
+        int new = key+9;
+        boolean temp = false;
     }
 }

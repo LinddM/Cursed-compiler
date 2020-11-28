@@ -6,6 +6,7 @@ namespace Cursed_compiler
 {
     class Irt
     {
+        public List<List<string>> tac;
         public Irt(Ast tree, Dictionary<string, List<string>> tokens){
 
             var pretokens = tokens.Values.ToList();
@@ -17,11 +18,10 @@ namespace Cursed_compiler
 				valuesTokens[i]=pretokens[i].ToList()[2];
 			}
 
-            var myTAC = threeAddressCode(inputTokens, valuesTokens);
+            tac = threeAddressCode(inputTokens, valuesTokens);
         }
 
         // tabla de codigo de tres direcciones o terceto
-        // faltan loops
         public List<List<string>> threeAddressCode(String [] inputTokens, String [] valuesTokens){
             List<List<string>> myTable = new List<List<string>>();
 
@@ -46,20 +46,87 @@ namespace Cursed_compiler
                                     for(int go=myTable.Count-1; go>=0; go--){
                                         if(myTable[go][0][1] == 'L'){
                                             exists2=true;
-                                            myTable.Add(new List<string>{null, valuesTokens[i-2] + " " + valuesTokens[i] + " " + valuesTokens[i+1] + " "+ valuesTokens[i+2] + " goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+1).ToString()});
-                                            myTable.Add(new List<string>{"_L"+(Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+1).ToString(), valuesTokens[i+5]}); // poner logica aca
-                                            myTable.Add(new List<string>{null, "goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString()});
-                                            myTable.Add(new List<string>{"_L"+(Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString(), null}); // poner logica aca
-                                            i=i+5;
+                                            myTable.Add(new List<string>{null, valuesTokens[i-2] + " " + valuesTokens[i] + " " + valuesTokens[i+1] + " "+ valuesTokens[i+2] + " goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString()});
+                                            // revisar si hay un else
+                                            string dec="";
+                                            int aumento=0;
+                                            for(int k=i; k<valuesTokens.Length-1; k++){
+                                                if(inputTokens[k]=="else_stmt"){
+                                                    for(int l=k+2; l<valuesTokens.Length-1; l++){
+                                                        if(inputTokens[l]!="close_braces"){
+                                                            dec+=valuesTokens[l];
+                                                        }else{
+                                                            aumento=l+1;
+                                                            break;
+                                                        }
+                                                    }
+                                                    myTable.RemoveAt(myTable.Count-1);
+                                                    myTable.Add(new List<string>{null, valuesTokens[i-2] + " " + valuesTokens[i] + " " + valuesTokens[i+1] + " "+ valuesTokens[i+2] + " goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString() + " else goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+3).ToString()});
+                                                    // myTable.Add(new List<string>{null, "goto _L" + (Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString()});
+                                                    myTable.Add(new List<string>{"_L"+(Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+2).ToString(), dec}); // poner logica aca
+                                                    break;
+                                                }
+                                            }
+                                            int more=0;
+                                            string add="";
+                                            for(int k=i+5; k<inputTokens.Length-1; k++){
+                                                if(inputTokens[k]!="close_braces"){
+                                                    add+=valuesTokens[k];
+                                                }else{
+                                                    more=k+1;
+                                                    break;
+                                                }
+                                            }
+                                            myTable.Add(new List<string>{"_L"+(Int16.Parse(myTable[go][0].ToCharArray()[2].ToString())+3).ToString(), add});
+                                            if(dec==""){
+                                                i=more;
+                                            }else{
+                                                i=aumento;
+                                            }
                                             break;
                                         }
                                     }
+                                    // si no existe
                                     if(!exists2){
                                         myTable.Add(new List<string>{null, valuesTokens[i-2] + " " + valuesTokens[i] + " " + valuesTokens[i+1] + " "+ valuesTokens[i+2] + " goto _L0"});
-                                        myTable.Add(new List<string>{"_L0", valuesTokens[i+5]}); // poner logica aca
-                                        myTable.Add(new List<string>{null, "goto _L1"});
-                                        myTable.Add(new List<string>{"_L1", null}); // poner logica aca
-                                        i=i+5;
+                                        string dec = "";
+                                        int aumento=0;
+                                        // buscar else
+                                        for(int k=i; k<valuesTokens.Length-1; k++){
+                                            if(inputTokens[k]=="else_stmt"){
+                                                for(int l=k+2; l<valuesTokens.Length-i; l++){
+                                                    if(inputTokens[l]!="close_braces"){
+                                                        dec+=valuesTokens[l];
+                                                    }else{
+                                                        aumento=l+1;
+                                                        break;
+                                                    }
+                                                }
+                                                myTable.RemoveAt(myTable.Count-1);
+                                                myTable.Add(new List<string>{null, valuesTokens[i-2] + " " + valuesTokens[i] + " " + valuesTokens[i+1] + " "+ valuesTokens[i+2] + " goto _L0 else goto _L1"});
+                                                myTable.Add(new List<string>{"_L1", dec});
+                                                break;
+                                            }
+                                        }
+                                        // lo que esta dentro del if
+                                        string add="";
+                                        int more=0;
+                                        for(int k=i+5; k<inputTokens.Length-1; k++){
+                                            if(inputTokens[k]!="close_braces"){
+                                                add+=valuesTokens[k];
+                                            }else{
+                                                more=k+1;
+                                                break;
+                                            }
+                                        }
+                                        myTable.Add(new List<string>{"_L0", add});
+                                        if(dec==""){
+                                            i=more;
+                                        }else{
+                                            i=aumento;
+                                        }
+                                    }else{
+                                        // es de otro tipo
                                     }
                                     break;
                                 }
@@ -90,6 +157,15 @@ namespace Cursed_compiler
                 }
             }
             return myTable;
+        }
+        public List<List<string>> assign(){
+            List<List<string>> myList = new List<List<string>>(){};
+            return myList;
+        }
+
+        public List<List<string>> relations(){
+            List<List<string>> myList = new List<List<string>>(){};
+            return myList;
         }
     }
 }

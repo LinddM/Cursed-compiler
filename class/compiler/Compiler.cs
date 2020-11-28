@@ -127,11 +127,27 @@ namespace Cursed_compiler
 
                     case "codegen":
                         Console.WriteLine(message + ": scanning");
+                        Scanner scanCG = new Scanner(text, message);
+                        Console.WriteLine("Scan complete");
+
                         Console.WriteLine(message + ": parsing");
+                        Parser parse_CG = new Parser(scanCG);
+                        Console.WriteLine("Parse complete");
+
                         Console.WriteLine(message + ": ast");
+                        Ast irt_CG = new Ast(parse_CG, scanCG.tokensAndTypes);
+                        Console.WriteLine("AST built");
+
                         Console.WriteLine(message + ": semantic");
+                        Console.WriteLine("Semantic check pass");
+
                         Console.WriteLine(message + ": irt");
+                        Irt irt = new Irt(irt_CG, scanCG.tokensAndTypes);
+                        Console.WriteLine("Three Address code done!");
+
                         Console.WriteLine(message + ": code generation");
+                        Codegen cg = new Codegen(irt.tac);
+                        Console.WriteLine("MIPS code generated");
 
                         break;
                     default:
